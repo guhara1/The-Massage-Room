@@ -931,6 +931,7 @@ function copyAssets() {
   const srcAssets = path.join(ROOT, 'src/assets');
   if (fs.existsSync(srcAssets)) {
     for (const f of fs.readdirSync(srcAssets)) {
+      if (/^hero-src\./i.test(f)) continue; // 원본(대용량)은 배포 제외 — WebP만 서빙
       const s = path.join(srcAssets, f);
       if (fs.statSync(s).isFile()) fs.copyFileSync(s, path.join(assets, f));
     }
