@@ -231,6 +231,12 @@ ${robots}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="format-detection" content="telephone=yes">
 <meta name="theme-color" content="#0b1120">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="stylesheet" href="/assets/styles.css">
@@ -877,6 +883,28 @@ function copyAssets() {
   fs.mkdirSync(assets, { recursive: true });
   fs.copyFileSync(path.join(ROOT, 'src/styles.css'), path.join(assets, 'styles.css'));
   fs.copyFileSync(path.join(ROOT, 'src/app.js'), path.join(assets, 'app.js'));
+
+  // 파비콘 / 앱 아이콘 → dist 루트
+  const favDir = path.join(ROOT, 'src/favicon');
+  ['favicon.ico', 'favicon.svg', 'favicon-16.png', 'favicon-32.png',
+   'apple-touch-icon.png', 'icon-512.png'].forEach(f => {
+    const src = path.join(favDir, f);
+    if (fs.existsSync(src)) fs.copyFileSync(src, path.join(DIST, f));
+  });
+  // 웹 매니페스트(안드로이드 홈 화면 아이콘)
+  fs.writeFileSync(path.join(DIST, 'site.webmanifest'), JSON.stringify({
+    name: SITE.brand + ' · 시흥·부천·인천 출장마사지',
+    short_name: SITE.brand,
+    icons: [
+      { src: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    theme_color: '#f97316',
+    background_color: '#0b1120',
+    display: 'standalone',
+    start_url: '/',
+  }, null, 2));
   // OG 커버 (자체 포함 SVG)
   const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1120"/><stop offset="1" stop-color="#131b2e"/></linearGradient>
