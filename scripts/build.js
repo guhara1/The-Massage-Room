@@ -20,12 +20,12 @@ const { operationPolicies, author, privacy, illegal, contact } = require('../dat
 const { lifeDetail, guDetail } = require('../data/localities');
 const siheung = require('../data/siheung');
 const bucheon = require('../data/bucheon');
+const incheon = require('../data/incheon');
 
 // 지역 전용 모듈이 소유하는 URL/슬러그 (generic 빌더에서 중복 생성 방지)
-const REGION_HUB_SLUGS = new Set(['siheung', 'bucheon']);
-const REGION_STATION_SLUGS = new Set([...siheung.stations, ...bucheon.stations].map(s => s.slug));
-const REGION_AREA_SLUGS = new Set([...siheung.areas, ...bucheon.areas].map(a => a.slug));
-const BUCHEON_AREA_SLUGS = new Set(bucheon.areas.map(a => a.slug));
+const REGION_HUB_SLUGS = new Set(['siheung', 'bucheon', 'incheon']);
+const REGION_STATION_SLUGS = new Set([...siheung.stations, ...bucheon.stations, ...incheon.stations].map(s => s.slug));
+const REGION_AREA_SLUGS = new Set([...siheung.areas, ...bucheon.areas, ...incheon.areas].map(a => a.slug));
 
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -888,6 +888,7 @@ function buildSitemapPage(allUrls) {
     ['9대 생활권', areas.map(a => [a.name, `${BASE}/area/${a.slug}/`])],
     ['시흥 상세', [['시흥 메인', `${BASE}/siheung/`], ...regionLinks(siheung)]],
     ['부천 상세', [['부천 메인', `${BASE}/bucheon/`], ...regionLinks(bucheon)]],
+    ['인천 상세', [['인천 메인', `${BASE}/incheon/`], ...regionLinks(incheon)]],
     ['마사지 프로그램', [['프로그램 전체', `${BASE}/program/`], ...programs.map(p => [p.name, `${BASE}/program/${p.slug}/`])]],
     ['이용 장소', usePlaces.map(u => [u.name, `${BASE}/use/${u.slug}/`])],
     ['공항·항만·산단', useHubs.map(u => [u.name, `${BASE}/use/${u.slug}/`])],
@@ -1153,21 +1154,14 @@ function run() {
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
 
-  // 형제 내부링크 인덱스(area slug → 세부지역) 사전 구성 (부천은 전용 모듈이 담당)
-  lifePages.filter(l => !BUCHEON_AREA_SLUGS.has(l.area)).forEach(l => registerLocality(l.area, l.name, `${BASE}/life/${l.slug}/`));
-
   buildHome();
   // 지역 전용 상세 모듈 (허브·권역·세부·역세권·이용장소·행정동)
   buildRegionSection(siheung, { name: '시흥', hubHref: BASE + '/siheung/' });
   buildRegionSection(bucheon, { name: '부천', hubHref: BASE + '/bucheon/' });
+  buildRegionSection(incheon, { name: '인천', hubHref: BASE + '/incheon/' });
 
-  regionMains.filter(r => !REGION_HUB_SLUGS.has(r.slug)).forEach(buildRegionMain);
-  areas.filter(a => !REGION_AREA_SLUGS.has(a.slug)).forEach(buildAreaPage);
-
-  incheonGu.forEach(g => buildGuPage(g, 'incheon', '인천'));
+  // 기존 인천 행정구역 명칭 안내(검색 수요 대응) — canonical/노인덱스
   legacyGu.forEach(buildLegacyGuPage);
-
-  lifePages.filter(l => !BUCHEON_AREA_SLUGS.has(l.area)).forEach(l => buildLifePage(l, `${BASE}/life`, 'incheon', '인천'));
 
   buildProgramIndex();
   programs.forEach(buildProgramPage);
