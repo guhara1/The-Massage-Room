@@ -27,6 +27,15 @@ const SIHEUNG_AREA_SLUGS = new Set(siheung.areas.map(a => a.slug));
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 
+// 히어로 이미지 해석: 업로드된 사진(webp/jpg/png) 우선, 없으면 플레이스홀더 SVG
+const HERO_IMG = (() => {
+  const dir = path.join(ROOT, 'src/assets');
+  for (const name of ['hero.webp', 'hero.jpg', 'hero.jpeg', 'hero.png', 'hero.svg']) {
+    if (fs.existsSync(path.join(dir, name))) return '/assets/' + name;
+  }
+  return '/assets/hero.svg';
+})();
+
 // ------------------------------------------------------------------ //
 // 유틸                                                                //
 // ------------------------------------------------------------------ //
@@ -71,6 +80,10 @@ function header(active) {
   </div>
   <div class="mobile-menu" id="m-menu" data-mobile-menu><div class="container">${mobile}</div></div>
 </header>`;
+}
+
+function heroMedia() {
+  return `<div class="hero-media"><img src="${esc(HERO_IMG)}" alt="간다GO 시흥·부천·인천 출장마사지 안내" width="560" height="620" fetchpriority="high" decoding="async"></div>`;
 }
 
 function floatingCall() {
@@ -559,11 +572,14 @@ function buildRegionMain(r) {
   });
   const progLinks = r.programs.map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]);
 
-  const body = `<section class="hero"><div class="container">
+  const body = `<section class="hero"><div class="container hero-grid">
+<div class="hero-copy">
 <span class="eyebrow">서부 수도권 · ${esc(r.name)}권</span>
 <h1>${esc(r.h1)}</h1>
 <p class="lead">${esc(r.intro)}</p>
 ${ctaRow()}
+</div>
+${heroMedia()}
 </div></section>
 <section class="section"><div class="container">
 <div class="section-head"><span class="kicker">생활권 안내</span><h2>${esc(r.name)}권 핵심 생활권</h2><p>지역명만 보는 것보다 실제 생활권과 숙소 유형을 함께 확인하세요.</p></div>
@@ -752,7 +768,8 @@ function buildHome() {
     { q: '개인정보는 어떻게 처리하나요?', a: '예약 확인과 연락에 필요한 최소 정보만 확인하며, 개인정보 처리방침 페이지로 연결합니다.' },
   ];
 
-  const body = `<section class="hero"><div class="container">
+  const body = `<section class="hero"><div class="container hero-grid">
+<div class="hero-copy">
 <span class="eyebrow">시흥 · 부천 · 인천 서부 수도권</span>
 <h1>시흥·부천·인천 출장마사지 · 서부 수도권 생활권 안내</h1>
 <p class="lead">시흥 배곧·정왕, 부천 중동·상동, 인천 송도·부평·구월·청라·영종 등 주요 생활권과 호텔·오피스텔·자택·공항·산단 인접 숙소 이용 전 확인사항을 안내합니다.</p>
@@ -762,6 +779,8 @@ function buildHome() {
   <a class="btn btn-ghost btn-lg" href="${BASE}/bucheon/">부천권 보기</a>
   <a class="btn btn-ghost btn-lg" href="${BASE}/incheon/">인천권 보기</a>
 </div>
+</div>
+${heroMedia()}
 </div></section>
 
 <section class="section"><div class="container">
@@ -904,6 +923,15 @@ function copyAssets() {
     const src = path.join(favDir, f);
     if (fs.existsSync(src)) fs.copyFileSync(src, path.join(DIST, f));
   });
+  // src/assets 전체(히어로 이미지 등 업로드 파일 포함) → dist/assets
+  const srcAssets = path.join(ROOT, 'src/assets');
+  if (fs.existsSync(srcAssets)) {
+    for (const f of fs.readdirSync(srcAssets)) {
+      const s = path.join(srcAssets, f);
+      if (fs.statSync(s).isFile()) fs.copyFileSync(s, path.join(assets, f));
+    }
+  }
+
   // 웹 매니페스트(안드로이드 홈 화면 아이콘)
   fs.writeFileSync(path.join(DIST, 'site.webmanifest'), JSON.stringify({
     name: SITE.brand + ' · 시흥·부천·인천 출장마사지',
@@ -1033,7 +1061,8 @@ function buildSiheungHub() {
     const st = siheung.stations.find(x => x.slug === s);
     return [st.h1.split(' · ')[0], BASE + st.url];
   });
-  const body = `<section class="hero"><div class="container">
+  const body = `<section class="hero"><div class="container hero-grid">
+<div class="hero-copy">
 <span class="eyebrow">시흥 · 서부 수도권</span>
 <h1>${esc(h.h1)}</h1>
 <p class="lead">${esc(h.intro)}</p>
@@ -1042,6 +1071,8 @@ function buildSiheungHub() {
   <a class="btn btn-ghost btn-lg" href="${BASE}/area/baegot-jeongwang-oido/">배곧·정왕·오이도권</a>
   <a class="btn btn-ghost btn-lg" href="${BASE}/area/eungye-janghyeon-mokgam/">은계·장현·목감권</a>
 </div>
+</div>
+${heroMedia()}
 </div></section>
 <section class="section"><div class="container article"><p>${esc(h.lead)}</p></div></section>
 <section class="section"><div class="container">

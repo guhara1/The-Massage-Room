@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 620" width="560" height="620" role="img" aria-label="간다GO 출장마사지 대표 이미지 (교체 예정)">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#18223a"/><stop offset="1" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="or" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff9a4d"/><stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.25" r="0.7">
+      <stop offset="0" stop-color="#f97316" stop-opacity="0.28"/><stop offset="1" stop-color="#f97316" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="560" height="620" rx="24" fill="url(#bg)"/>
+  <rect width="560" height="620" rx="24" fill="url(#glow)"/>
+  <circle cx="420" cy="150" r="120" fill="#f97316" opacity="0.10"/>
+  <circle cx="140" cy="470" r="150" fill="#3b82f6" opacity="0.07"/>
+  <!-- 물결/릴렉스 라인 -->
+  <g fill="none" stroke="url(#or)" stroke-width="3" opacity="0.55" stroke-linecap="round">
+    <path d="M70 300 C 150 250, 230 350, 310 300 S 470 250, 500 300"/>
+    <path d="M70 340 C 150 290, 230 390, 310 340 S 470 290, 500 340" opacity="0.6"/>
+    <path d="M70 380 C 150 330, 230 430, 310 380 S 470 330, 500 380" opacity="0.4"/>
+  </g>
+  <g fill="#f4f7fc" opacity="0.9">
+    <text x="48" y="120" font-family="Pretendard, sans-serif" font-size="30" font-weight="800">간다GO</text>
+    <text x="48" y="162" font-family="Pretendard, sans-serif" font-size="18" fill="#cdd6e6" font-weight="600">시흥·부천·인천 출장마사지</text>
+  </g>
+  <g transform="translate(48 520)">
+    <rect width="270" height="56" rx="28" fill="url(#or)"/>
+    <text x="30" y="36" font-family="Pretendard, sans-serif" font-size="22" font-weight="700" fill="#fff">전화예약 0508-202-4719</text>
+  </g>
+  <text x="48" y="600" font-family="Pretendard, sans-serif" font-size="13" fill="#64728c">대표 이미지 — 업로드 후 교체됩니다</text>
+</svg>

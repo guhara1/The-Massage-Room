@@ -175,6 +175,18 @@ strong { color: var(--text-0); font-weight: 700; }
     radial-gradient(900px 420px at 80% -20%, rgba(249,115,22,.18), transparent 55%),
     radial-gradient(700px 500px at 0% 10%, rgba(59,130,246,.10), transparent 55%);
 }
+.hero-grid { display: grid; gap: clamp(24px, 4vw, 48px); align-items: center; }
+.hero-copy { min-width: 0; }
+.hero-media { display: none; }
+.hero-media img {
+  width: 100%; height: auto; border-radius: var(--r-lg);
+  border: 1px solid var(--line-strong); box-shadow: var(--shadow-3);
+  background: var(--surface-1); aspect-ratio: 560 / 620; object-fit: cover;
+}
+@media (min-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
+  .hero-media { display: block; }
+}
 .hero .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   color: var(--accent-300); font-weight: 700; font-size: .82rem; letter-spacing: .04em;
