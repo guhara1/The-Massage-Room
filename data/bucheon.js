@@ -588,6 +588,13 @@ const noindexDongs = [
   DONG('gogang-dong', '고강동', '/bucheon/wonjong/', '원종·고강'),
   DONG('samjeong-dong', '삼정동', '/bucheon/ojeong-naedong/', '오정·내동'),
   DONG('naedong', '내동', '/bucheon/ojeong-naedong/', '오정·내동'),
+  DONG('dodang-dong', '도당동', '/bucheon/sinjungdong/', '신중동·부천시청', true),
+  DONG('yeowol-dong', '여월동', '/bucheon/sinjungdong/', '신중동·부천시청', true),
+  DONG('jak-dong', '작동', '/bucheon/wonjong/', '원종·고강', true),
+  DONG('daejang-dong', '대장동', '/bucheon/ojeong-naedong/', '오정·내동', true),
+  DONG('simgokbon-dong', '심곡본동', '/bucheon/yeokgok/', '역곡·소사', true),
+  DONG('seonggok-dong', '성곡동', '/bucheon/ojeong-naedong/', '오정·내동', true),
+  DONG('sosa-dong', '소사동', '/bucheon/yeokgok/', '역곡·소사', true),
 ];
 
 // ------------------------------------------------------------------ //
