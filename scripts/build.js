@@ -484,6 +484,7 @@ ${ctaRow()}
 <table class="meta-table"><tbody>
 ${p.detail.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}
 </tbody></table>
+${(deepen[url] || []).length ? `<h2>${esc(p.name)} 이용 안내와 대상</h2>${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}
 <h2>이용 장소 선택 기준</h2>
 <p>같은 프로그램이라도 자택·호텔·오피스텔에 따라 준비물과 확인 항목이 다릅니다. 아래 이용 장소 안내를 함께 확인하세요.</p>
 <div class="linklist">
@@ -507,8 +508,21 @@ ${relatedLinks('다른 프로그램 보기', programs.filter(x => x.slug !== p.s
   }));
 }
 
+// 지역 전용 모듈 페이지와 중복되는 이용장소 허브 → noindex + canonical 통합
+const USE_DUP_CANONICAL = {
+  'incheon-airport-accommodation': '/use/incheon-airport-stay/',
+  'yeongjong-airport-city': '/incheon/yeongjong-unseo/',
+  'songdo-business-district': '/use/incheon-songdo-business/',
+  'namdong-industrial-area': '/incheon/namdong-gu/',
+  'incheon-port-jemulpo': '/incheon/jemulpo-dongincheon/',
+  'bucheon-commerce-area': '/use/bucheon-commerce-stay/',
+  'geomdan-newtown': '/incheon/geomdan-newtown/',
+};
+
 function buildUsePage(u, kind) {
   const url = `${BASE}/use/${u.slug}/`;
+  const dupCanon = USE_DUP_CANONICAL[u.slug];
+  if (dupCanon) { u = Object.assign({}, u, { noindex: true, canonicalTo: dupCanon }); }
   const bodyParas = (u.body || []).map(p => `<p>${esc(p)}</p>`).join('');
   const otherUse = usePlaces.filter(x => x.slug !== u.slug).slice(0, 6).map(x => [x.name, `${BASE}/use/${x.slug}/`]);
   const body = `<article class="section"><div class="container article">
@@ -517,6 +531,7 @@ function buildUsePage(u, kind) {
 ${ctaRow()}
 <h2>${esc(u.name)} 이용 환경 안내</h2>
 ${bodyParas}
+${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}
 <h2>예약 전 확인 항목</h2>
 <ul class="check-list">${u.points.map(pt => `<li>${esc(pt)}</li>`).join('')}</ul>
 <div class="callout">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.</div>
@@ -530,11 +545,12 @@ ${relatedLinks('생활권 안내', areas.slice(0, 6).map(a => [a.name, `${BASE}/
 </div></article>`;
   writePage(url, layout({
     url, active: BASE + '/use/home/',
+    noindex: !!u.noindex, canonical: u.canonicalTo ? BASE + u.canonicalTo : null,
     title: `${u.h1}｜${SITE.brand}`,
     description: `${u.name} 출장마사지 이용 전 출입·이동·예약 확인 항목을 안내합니다.`,
     breadcrumbs: crumbs({ name: '이용 장소', href: `${BASE}/use/home/` }, { name: u.name, href: url }),
     body, faq: u.faq,
-  }));
+  }), { noindex: !!u.noindex, canonical: u.canonicalTo ? BASE + u.canonicalTo : null });
 }
 
 function buildCheckPage(c) {
