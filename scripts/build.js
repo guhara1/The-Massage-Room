@@ -18,7 +18,7 @@ const { regionMains, bucheonGu, incheonGu, legacyGu, lifePages, siheungLife } = 
 const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
 const { lifeDetail, guDetail } = require('../data/localities');
-const { deepen, stationExtra } = require('../data/deepen');
+const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
 const siheung = require('../data/siheung');
 const bucheon = require('../data/bucheon');
 const incheon = require('../data/incheon');
@@ -485,6 +485,7 @@ ${ctaRow()}
 ${p.detail.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}
 </tbody></table>
 ${(deepen[url] || []).length ? `<h2>${esc(p.name)} 이용 안내와 대상</h2>${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}
+${(programExtra[p.slug] || []).length ? `<h2>${esc(p.name)} 준비와 주의사항</h2>${(programExtra[p.slug] || []).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}
 <h2>이용 장소 선택 기준</h2>
 <p>같은 프로그램이라도 자택·호텔·오피스텔에 따라 준비물과 확인 항목이 다릅니다. 아래 이용 장소 안내를 함께 확인하세요.</p>
 <div class="linklist">
@@ -529,9 +530,15 @@ function buildUsePage(u, kind) {
 <h1>${esc(u.h1)}</h1>
 <p>${esc(u.intro)}</p>
 ${ctaRow()}
+<table class="meta-table"><tbody>
+<tr><th>이용 장소</th><td><a href="${BASE}/use/home/">자택</a> · <a href="${BASE}/use/hotel/">호텔·숙소</a> · <a href="${BASE}/use/officetel/">오피스텔</a> · <a href="${BASE}/use/apartment/">아파트</a></td></tr>
+<tr><th>예약 전 확인</th><td><a href="${BASE}/check/customer-notice/">고객 안내</a> · <a href="${BASE}/check/address/">주소 확인</a> · <a href="${BASE}/check/travel-fee/">이동료 기준</a></td></tr>
+<tr><th>예약·문의</th><td>전화 <a href="${SITE.phoneHref}">${esc(SITE.phone)}</a> · <a href="${esc(SITE.telegram.reserve)}" target="_blank" rel="noopener nofollow">텔레그램</a></td></tr>
+</tbody></table>
 <h2>${esc(u.name)} 이용 환경 안내</h2>
 ${bodyParas}
 ${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}
+${(useExtra[u.slug] || []).map(x => `<p>${esc(x)}</p>`).join('')}
 <h2>예약 전 확인 항목</h2>
 <ul class="check-list">${u.points.map(pt => `<li>${esc(pt)}</li>`).join('')}</ul>
 <div class="callout">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.</div>
