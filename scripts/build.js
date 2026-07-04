@@ -486,6 +486,15 @@ ${p.detail.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join
 </tbody></table>
 ${(deepen[url] || []).length ? `<h2>${esc(p.name)} 이용 안내와 대상</h2>${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}
 ${(programExtra[p.slug] || []).length ? `<h2>${esc(p.name)} 준비와 주의사항</h2>${(programExtra[p.slug] || []).map(x => `<p>${esc(x)}</p>`).join('')}` : ''}
+<h2>예약 전 체크리스트</h2>
+<ul class="check-list">
+<li>이용 장소(자택·호텔·오피스텔·아파트)와 정확한 주소·동·호수</li>
+<li>공동현관·객실 출입 방법과 카드키·방문 등록 여부</li>
+<li>원하는 예약 시간대와 프로그램, 집중 관리 부위</li>
+<li>건강 상태(임신·질환·통증 부위 등)와 압 강도 선호</li>
+<li>오일 사용 여부 등 프로그램별 준비물</li>
+<li>지역·시간대·이동 거리에 따른 이동료 기준(상담 시 확인)</li>
+</ul>
 <h2>이용 장소 선택 기준</h2>
 <p>같은 프로그램이라도 자택·호텔·오피스텔에 따라 준비물과 확인 항목이 다릅니다. 아래 이용 장소 안내를 함께 확인하세요.</p>
 <div class="linklist">
