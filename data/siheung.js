@@ -33,8 +33,11 @@ const hub = {
     '시흥 출장마사지는 신도시·산업단지·서해안 숙소·행정 생활권이 한 도시 안에 섞여 있어, 도시명만 보는 것보다 배곧·정왕·오이도·월곶·은계·장현·목감·거북섬처럼 실제 생활권을 함께 확인하는 것이 중요합니다. 같은 시흥이라도 배곧 신축 오피스텔, 정왕 시화산단 원룸, 오이도 해안 숙소는 건물 유형과 이동 동선이 크게 달라 예약 전 확인 항목이 다릅니다.',
   lead:
     '이 페이지는 시흥 전체를 한눈에 안내하는 허브입니다. 서부(배곧·정왕·오이도)와 동부(은계·장현·목감) 생활권으로 나누어 주요 지역과 숙소 이용 기준을 정리하고, 세부 생활권 페이지로 연결합니다.',
-  westAreas: ['baegot', 'jeongwang', 'oido-wolgot', 'geobukseom'],
-  eastAreas: ['eungye-daeya', 'janghyeon-cityhall', 'mokgam-neunggok'],
+  ctaAreas: [['배곧·정왕·오이도권', '/area/baegot-jeongwang-oido/'], ['은계·장현·목감권', '/area/eungye-janghyeon-mokgam/']],
+  groups: [
+    { kicker: '서부 생활권', title: '배곧·정왕·오이도·거북섬', slugs: ['baegot', 'jeongwang', 'oido-wolgot', 'geobukseom'] },
+    { kicker: '동부 생활권', title: '은계·장현·목감', slugs: ['eungye-daeya', 'janghyeon-cityhall', 'mokgam-neunggok'] },
+  ],
   stations: ['jeongwang-station', 'oido-station', 'wolgot-station', 'siheung-cityhall-station', 'neunggok-station'],
   useLinks: [
     ['시흥 호텔·숙소', '/use/siheung-hotel/'],
