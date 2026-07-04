@@ -19,6 +19,7 @@ const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
 const { lifeDetail, guDetail } = require('../data/localities');
 const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
+const { dongFull } = require('../data/dongs');
 const siheung = require('../data/siheung');
 const bucheon = require('../data/bucheon');
 const incheon = require('../data/incheon');
@@ -1199,7 +1200,16 @@ function buildRegionSection(module, reg) {
   module.details.forEach(d => buildRegionDetail(d, reg, d.crumbParent ? [{ name: d.crumbParent[0], href: BASE + d.crumbParent[1] }] : []));
   module.stations.forEach(s => buildRegionDetail(s, reg, [{ name: '역세권', href: reg.hubHref }]));
   module.uses.forEach(u => buildRegionDetail(u, reg, [{ name: '이용 장소', href: reg.hubHref }]));
-  (module.noindexDongs || []).forEach(d => buildRegionDongStub(d, reg));
+  (module.noindexDongs || []).forEach(d => {
+    const full = dongFull[d.url];
+    if (full) {
+      // 고유 본문 확보 → §8 풀 페이지 + index
+      const page = Object.assign({}, d, full);
+      buildRegionDetail(page, reg, [{ name: d.parentName, href: BASE + d.parentUrl }]);
+    } else {
+      buildRegionDongStub(d, reg);
+    }
+  });
   (module.programCombos || []).forEach(c => buildRegionCombo(c, reg));
 }
 
