@@ -175,6 +175,9 @@ strong { color: var(--text-0); font-weight: 700; }
     radial-gradient(900px 420px at 80% -20%, rgba(249,115,22,.18), transparent 55%),
     radial-gradient(700px 500px at 0% 10%, rgba(59,130,246,.10), transparent 55%);
 }
+.hero.hero-sub { padding: clamp(28px, 5vw, 52px) 0 clamp(20px, 3vw, 32px); }
+.hero.hero-sub .hero-media img { aspect-ratio: 4 / 3; }
+.hero.hero-sub h1 { font-size: clamp(1.5rem, 3.6vw, 2.2rem); }
 .hero-grid { display: grid; gap: clamp(24px, 4vw, 48px); align-items: center; }
 .hero-copy { min-width: 0; }
 .hero-media { display: none; }

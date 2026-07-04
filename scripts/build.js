@@ -1006,11 +1006,16 @@ function pillsHtml(pills) {
 function siheungArticleBody(p) {
   const progLinks = (p.programs || []).map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]);
   const rel = (p.related || []).map(([l, h]) => [l, h.startsWith('http') ? h : BASE + h]);
-  return `<article class="section"><div class="container article">
+  return `<section class="hero hero-sub"><div class="container hero-grid">
+<div class="hero-copy">
 <h1>${esc(p.h1)}</h1>
 ${pillsHtml(p.pills)}
-<p>${esc(p.intro)}</p>
+<p class="lead">${esc(p.intro)}</p>
 ${ctaRow()}
+</div>
+${heroMedia()}
+</div></section>
+<article class="section"><div class="container article">
 <h2>이 지역의 생활권 특징</h2>
 ${p.character.map(c => `<p>${esc(c)}</p>`).join('')}
 <h2>가까운 역세권과 이동 기준</h2>
@@ -1103,10 +1108,15 @@ ${whwBlock(WHW_DEFAULT.who.replace('시흥·부천·인천 지역', esc(reg.name
 
 function buildRegionDongStub(d, reg) {
   const url = BASE + d.url;
-  const body = `<article class="section"><div class="container article">
+  const body = `<section class="hero hero-sub"><div class="container hero-grid">
+<div class="hero-copy">
 <h1>${esc(d.name)} 출장마사지 안내</h1>
-<p>${esc(d.name)}은(는) ${esc(d.parentName)} 생활권에 속하는 행정동 구간입니다. 이용 환경과 예약 전 확인 기준은 상위 생활권 안내에서 함께 관리합니다.</p>
+<p class="lead">${esc(d.name)}은(는) ${esc(d.parentName)} 생활권에 속하는 행정동 구간입니다. 이용 환경과 예약 전 확인 기준은 상위 생활권 안내에서 함께 관리합니다.</p>
 ${ctaRow()}
+</div>
+${heroMedia()}
+</div></section>
+<article class="section"><div class="container article">
 <div class="linklist"><a href="${BASE}${d.parentUrl}">${esc(d.parentName)} 생활권 안내 →</a><a href="${reg.hubHref}">${esc(reg.name)} 메인 →</a></div>
 ${ILLEGAL_NOTICE}
 </div></article>`;
