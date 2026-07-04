@@ -17,6 +17,7 @@ const { checks } = require('../data/checks');
 const { regionMains, bucheonGu, incheonGu, legacyGu, lifePages, siheungLife } = require('../data/regions');
 const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
+const { lifeDetail, guDetail } = require('../data/localities');
 
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -279,6 +280,52 @@ function relatedLinks(title, links) {
   }</div>`;
 }
 
+// area slug → 같은 생활권 세부지역 목록(형제 내부링크용)
+const localityIndex = {};
+function registerLocality(areaSlug, name, url) {
+  (localityIndex[areaSlug] = localityIndex[areaSlug] || []).push([name, url]);
+}
+
+/** 세부 생활권 / 구 상세 본문 (2,000자 목표, area 페이지와 동일 H2 골격) */
+function renderLocalityArticle(d, ctx) {
+  const { name, area, selfUrl, relatedLabel, relatedLinksArr } = ctx;
+  const progLinks = (d.programs || []).map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]);
+  const whoRegion = name + ' 생활권';
+  const siblings = (localityIndex[area.slug] || []).filter(([, u]) => u !== selfUrl);
+  const stayLinks = [['자택 이용', `${BASE}/use/home/`], ['호텔·숙소', `${BASE}/use/hotel/`],
+    ['오피스텔', `${BASE}/use/officetel/`], ['아파트 단지', `${BASE}/use/apartment/`]];
+  return `<h1>${esc(name)} 출장마사지 이용 안내</h1>
+<p>${esc(d.intro)}</p>
+${ctaRow()}
+<h2>이 지역의 생활권 특징</h2>
+${d.character.map(p => `<p>${esc(p)}</p>`).join('')}
+<h2>가까운 역·광역교통 기준</h2>
+<p>${esc(d.transport)}</p>
+<h2>숙소·오피스텔·자택 이용 전 확인</h2>
+<p>${esc(d.stay)}</p>
+<div class="linklist">${stayLinks.map(([l, h]) => `<a href="${esc(h)}">${esc(l)}</a>`).join('')}</div>
+<h2>공항·항만·산단·신도시 이동 기준</h2>
+<p>${esc(d.move)}</p>
+<h2>마사지 프로그램 선택 기준</h2>
+<p>${esc(d.programHint)}</p>
+<div class="linklist">${progLinks.map(([l, h]) => `<a href="${esc(h)}">${esc(l)}</a>`).join('')}</div>
+<h2>예약 전 체크리스트</h2>
+<ul class="check-list">
+<li>정확한 도로명 주소와 동·호수, 건물명</li>
+<li>공동현관·엘리베이터 출입 방법과 카드키 여부</li>
+<li>방문차량 등록 필요 여부와 주차 동선</li>
+<li>원하는 예약 시간대와 프로그램, 이동 거리</li>
+</ul>
+<h2>개인정보 처리 기준</h2>
+<p>예약 확인과 연락에 필요한 최소 정보만 확인하며, 목적이 완료되면 지체 없이 파기합니다. 자세한 내용은 <a href="${BASE}/policy/privacy/">개인정보 처리방침</a>에서 안내합니다.</p>
+<h2>불법·선정적 서비스 불가 안내</h2>
+${ILLEGAL_NOTICE}
+${faqBlock(d.faq)}
+${whwBlock(WHW_DEFAULT.who.replace('시흥·부천·인천 지역', esc(whoRegion)), WHW_DEFAULT.how, WHW_DEFAULT.why)}
+${relatedLinks(relatedLabel || '관련 지역 보기', relatedLinksArr || [[`${area.name} 생활권`, `${BASE}/area/${area.slug}/`]])}
+${siblings.length ? relatedLinks(`${area.name} 생활권 내 다른 지역`, siblings) : ''}`;
+}
+
 function ctaRow() {
   return `<div class="lead-cta">
     <a class="btn btn-primary" href="${SITE.phoneHref}">${phoneSvg}전화예약 ${esc(SITE.phone)}</a>
@@ -520,6 +567,24 @@ ${relatedLinks('예약 전 확인', [['이용 장소', `${BASE}/use/home/`], ['�
 function buildGuPage(g, regionSlug, regionName) {
   const url = `${BASE}/${regionSlug}/${g.slug}/`;
   const a = areaBySlug[g.area];
+  const detail = guDetail[g.slug];
+  const bc = crumbs({ name: `${regionName}권`, href: `${BASE}/${regionSlug}/` }, { name: g.name, href: url });
+
+  if (detail && !g.thin) {
+    const relArea = [[`${a.name} 생활권`, `${BASE}/area/${a.slug}/`], [`${regionName}권 전체`, `${BASE}/${regionSlug}/`]];
+    const body = `<article class="section"><div class="container article">
+${renderLocalityArticle(detail, { name: g.name, area: a, selfUrl: url, relatedLabel: '관련 생활권 보기', relatedLinksArr: relArea })}
+</div></article>`;
+    writePage(url, layout({
+      url, active: `${BASE}/${regionSlug}/`,
+      title: `${g.h1}｜${SITE.brand}`,
+      description: `${g.name} 출장마사지 생활권·교통·숙소 이용 기준과 프로그램 선택을 안내합니다.`,
+      breadcrumbs: bc, body, faq: detail.faq,
+    }));
+    return;
+  }
+
+  // thin(강화군·옹진군 등) 또는 상세 없음 → 라이트 + noindex
   const body = `<article class="section"><div class="container article">
 <h1>${esc(g.h1)}</h1>
 <p>${esc(g.intro)}</p>
@@ -536,8 +601,7 @@ ${ILLEGAL_NOTICE}
     noindex: !!g.thin,
     title: `${g.h1}｜${SITE.brand}`,
     description: `${g.name} 출장마사지 생활권과 이용 기준을 안내합니다. 예약 전 확인사항을 함께 안내합니다.`,
-    breadcrumbs: crumbs({ name: `${regionName}권`, href: `${BASE}/${regionSlug}/` }, { name: g.name, href: url }),
-    body,
+    breadcrumbs: bc, body,
   }), { noindex: !!g.thin });
 }
 
@@ -559,10 +623,33 @@ function buildLegacyGuPage(g) {
   }), { noindex: true, canonical: g.canonicalTo });
 }
 
-/** life / siheung 세부 생활권 — 상위 area로 canonical */
+/** life / siheung 세부 생활권 */
 function buildLifePage(l, base, regionSlug, regionName) {
   const url = `${base}/${l.slug}/`;
   const a = areaBySlug[l.area];
+  const detail = lifeDetail[l.slug];
+  const bc = crumbs(
+    { name: `${regionName}권`, href: `${BASE}/${regionSlug}/` },
+    { name: a.name, href: `${BASE}/area/${a.slug}/` },
+    { name: l.name, href: url });
+
+  if (detail) {
+    // 고유 본문 확보 → 자기 자신 canonical, index 승격
+    const relArea = [[`${a.name} 생활권 전체`, `${BASE}/area/${a.slug}/`],
+      [`${regionName}권 전체`, `${BASE}/${regionSlug}/`]];
+    const body = `<article class="section"><div class="container article">
+${renderLocalityArticle(detail, { name: l.name, area: a, selfUrl: url, relatedLabel: '관련 지역 보기', relatedLinksArr: relArea })}
+</div></article>`;
+    writePage(url, layout({
+      url, active: `${BASE}/${regionSlug}/`,
+      title: `${l.name} 출장마사지 · ${a.name} 생활권 안내｜${SITE.brand}`,
+      description: `${l.name} 출장마사지 생활권·교통·숙소 이용 기준과 프로그램 선택을 안내합니다.`,
+      breadcrumbs: bc, body, faq: detail.faq,
+    }));
+    return;
+  }
+
+  // 상세 데이터 없는 경우 상위 area로 canonical
   const canonical = `${BASE}/area/${a.slug}/`;
   const body = `<article class="section"><div class="container article">
 <h1>${esc(l.name)} 출장마사지 생활권 안내</h1>
@@ -575,12 +662,10 @@ ${ctaRow()}
 ${ILLEGAL_NOTICE}
 </div></article>`;
   writePage(url, layout({
-    url, active: `${BASE}/${regionSlug}/`,
-    canonical,
+    url, active: `${BASE}/${regionSlug}/`, canonical,
     title: `${l.name} 출장마사지 · ${a.name} 생활권｜${SITE.brand}`,
     description: `${l.name} 출장마사지 이용 기준은 ${a.name} 생활권 안내에서 확인하세요.`,
-    breadcrumbs: crumbs({ name: `${regionName}권`, href: `${BASE}/${regionSlug}/` }, { name: a.name, href: canonical }, { name: l.name, href: url }),
-    body,
+    breadcrumbs: bc, body,
   }), { canonical });
 }
 
@@ -833,6 +918,10 @@ function writeRootRedirect() {
 function run() {
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
+
+  // 형제 내부링크 인덱스(area slug → 세부지역) 사전 구성
+  lifePages.forEach(l => registerLocality(l.area, l.name, `${BASE}/life/${l.slug}/`));
+  siheungLife.forEach(l => registerLocality(l.area, l.name, `${BASE}/siheung/${l.slug}/`));
 
   buildHome();
   regionMains.forEach(buildRegionMain);
