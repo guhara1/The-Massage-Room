@@ -231,6 +231,8 @@ ${robots}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="format-detection" content="telephone=yes">
 <meta name="theme-color" content="#0b1120">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="stylesheet" href="/assets/styles.css">
 <script type="application/ld+json">${schema}</script>
 </head>
@@ -479,16 +481,23 @@ ${relatedLinks('다른 프로그램 보기', programs.filter(x => x.slug !== p.s
 
 function buildUsePage(u, kind) {
   const url = `${BASE}/use/${u.slug}/`;
+  const bodyParas = (u.body || []).map(p => `<p>${esc(p)}</p>`).join('');
+  const otherUse = usePlaces.filter(x => x.slug !== u.slug).slice(0, 6).map(x => [x.name, `${BASE}/use/${x.slug}/`]);
   const body = `<article class="section"><div class="container article">
 <h1>${esc(u.h1)}</h1>
 <p>${esc(u.intro)}</p>
 ${ctaRow()}
+<h2>${esc(u.name)} 이용 환경 안내</h2>
+${bodyParas}
 <h2>예약 전 확인 항목</h2>
 <ul class="check-list">${u.points.map(pt => `<li>${esc(pt)}</li>`).join('')}</ul>
+<div class="callout">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.</div>
 <h2>불법·선정적 서비스 불가 안내</h2>
 ${ILLEGAL_NOTICE}
-${whwBlock(`이 콘텐츠는 ${esc(u.name)} 이용 전 확인 항목을 안내하기 위해 작성되었습니다.`, WHW_DEFAULT.how, WHW_DEFAULT.why)}
+${faqBlock(u.faq)}
+${whwBlock(`이 콘텐츠는 ${esc(u.name)} 이용 전 출입·이동·예약 확인 항목을 안내하기 위해 작성되었습니다.`, WHW_DEFAULT.how, WHW_DEFAULT.why)}
 ${relatedLinks('예약 전 확인', [['고객 안내사항', `${BASE}/check/customer-notice/`], ['개인정보 처리', `${BASE}/check/privacy/`], ['이동료 기준', `${BASE}/check/travel-fee/`]])}
+${relatedLinks('다른 이용 장소', otherUse)}
 ${relatedLinks('생활권 안내', areas.slice(0, 6).map(a => [a.name, `${BASE}/area/${a.slug}/`]))}
 </div></article>`;
   writePage(url, layout({
@@ -496,7 +505,7 @@ ${relatedLinks('생활권 안내', areas.slice(0, 6).map(a => [a.name, `${BASE}/
     title: `${u.h1}｜${SITE.brand}`,
     description: `${u.name} 출장마사지 이용 전 출입·이동·예약 확인 항목을 안내합니다.`,
     breadcrumbs: crumbs({ name: '이용 장소', href: `${BASE}/use/home/` }, { name: u.name, href: url }),
-    body,
+    body, faq: u.faq,
   }));
 }
 
