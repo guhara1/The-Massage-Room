@@ -18,7 +18,7 @@ const { regionMains, bucheonGu, incheonGu, legacyGu, lifePages, siheungLife } = 
 const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
 const { lifeDetail, guDetail } = require('../data/localities');
-const { deepen } = require('../data/deepen');
+const { deepen, stationExtra } = require('../data/deepen');
 const siheung = require('../data/siheung');
 const bucheon = require('../data/bucheon');
 const incheon = require('../data/incheon');
@@ -1024,10 +1024,13 @@ function pillsHtml(pills) {
 function siheungArticleBody(p) {
   const progLinks = (p.programs || []).map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]);
   const rel = (p.related || []).map(([l, h]) => [l, h.startsWith('http') ? h : BASE + h]);
+  // 역세권 등 pills 미지정 페이지는 역명·노선으로 폴백
+  const pills = (p.pills && p.pills.length) ? p.pills
+    : (p.line ? [p.h1.split(' · ')[0], p.line + ' 인접 생활권'] : []);
   return `<section class="hero hero-sub"><div class="container hero-grid">
 <div class="hero-copy">
 <h1>${esc(p.h1)}</h1>
-${pillsHtml(p.pills)}
+${pillsHtml(pills)}
 <p class="lead">${esc(p.intro)}</p>
 ${ctaRow()}
 </div>
@@ -1035,13 +1038,13 @@ ${heroMedia()}
 </div></section>
 <article class="section"><div class="container article">
 <table class="meta-table"><tbody>
-<tr><th>주요 지역</th><td>${esc((p.pills || []).join(' · '))}</td></tr>
+<tr><th>주요 지역</th><td>${esc(pills.join(' · '))}</td></tr>
 <tr><th>추천 프로그램</th><td>${progLinks.map(([l, h]) => `<a href="${esc(h)}">${esc(l)}</a>`).join(' · ')}</td></tr>
 <tr><th>이용 장소</th><td><a href="${BASE}/use/home/">자택</a> · <a href="${BASE}/use/hotel/">호텔·숙소</a> · <a href="${BASE}/use/officetel/">오피스텔</a> · <a href="${BASE}/use/apartment/">아파트</a></td></tr>
 <tr><th>예약·문의</th><td>전화 <a href="${SITE.phoneHref}">${esc(SITE.phone)}</a> · <a href="${esc(SITE.telegram.reserve)}" target="_blank" rel="noopener nofollow">텔레그램</a></td></tr>
 </tbody></table>
 <h2>이 지역의 생활권 특징</h2>
-${[...p.character, ...(deepen[p.url] || [])].map(c => `<p>${esc(c)}</p>`).join('')}
+${[...p.character, ...(deepen[p.url] || []), ...(p.slug && stationExtra[p.slug] ? [stationExtra[p.slug]] : [])].map(c => `<p>${esc(c)}</p>`).join('')}
 <h2>가까운 역세권과 이동 기준</h2>
 <p>${esc(p.transport)}</p>
 <h2>호텔·숙소 이용 전 확인</h2>
