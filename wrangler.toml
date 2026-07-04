@@ -1,0 +1,5 @@
+# Cloudflare Pages 설정
+# 빌드 결과물이 dist/ 에 있으므로 출력 디렉터리를 dist 로 지정한다.
+# (dist/ 는 저장소에 커밋되어 있어 별도 빌드 명령 없이도 그대로 서빙된다.)
+name = "the-massage-room"
+pages_build_output_dir = "dist"

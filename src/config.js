@@ -12,8 +12,8 @@ const SITE = {
   brandEn: 'GandaGo',
   tagline: '시흥·부천·인천 출장마사지 · 서부 수도권 생활권 안내',
 
-  // 실제 배포 도메인으로 교체하세요.
-  baseUrl: 'https://the-massage-room.example',
+  // 배포 도메인 (커스텀 도메인 연결 시 이 값만 교체 후 재빌드)
+  baseUrl: 'https://the-massage-room.pages.dev',
 
   // 전화 예약
   phone: '0508-202-4719',
