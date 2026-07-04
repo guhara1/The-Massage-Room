@@ -1031,6 +1031,7 @@ ${p.character.map(c => `<p>${esc(c)}</p>`).join('')}
 <p>${esc(p.move)}</p>
 <h2>마사지 프로그램 선택 기준</h2>
 <p>${esc(p.programHint)}</p>
+<ul class="check-list">${(p.programs || []).map(s => { const pr = programBySlug[s]; return pr ? `<li><strong>${esc(pr.name)}</strong> — ${esc(pr.goodFor.join(' · '))} (${esc(pr.detail[0][1].split('.')[0])})</li>` : ''; }).join('')}</ul>
 <div class="linklist">${progLinks.map(([l, h]) => `<a href="${esc(h)}">${esc(l)}</a>`).join('')}</div>
 <h2>예약 전 체크리스트</h2>
 <ul class="check-list">
