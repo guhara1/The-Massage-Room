@@ -618,9 +618,11 @@ const uses = [
 // ------------------------------------------------------------------ //
 // 6. 군(외곽)·기존 명칭 안내 (noindex)                                 //
 // ------------------------------------------------------------------ //
+const { incheonDongList } = require('./incheon-dongs');
 const noindexDongs = [
   DONG('ganghwa-gun', '강화군', '/area/cheongna-seohae-geomdan/', '청라·서해·검단'),
   DONG('ongjin-gun', '옹진군', '/area/yeongjong-airport-jemulpo/', '영종·공항·제물포'),
+  ...incheonDongList,
 ];
 
 const programCombos = [

@@ -553,4 +553,12 @@ const dongDeepen5 = {
 };
 for (const k of Object.keys(dongDeepen5)) { deepen[k] = (deepen[k] || []).concat(dongDeepen5[k]); }
 
+/** 인천 행정동 심화 문단(자동 생성 모듈에서 병합) */
+try {
+  const { incheonDongDeepen } = require('./incheon-dongs');
+  for (const k of Object.keys(incheonDongDeepen)) {
+    deepen[k] = (deepen[k] || []).concat(incheonDongDeepen[k]);
+  }
+} catch (e) { /* incheon-dongs 아직 없을 때 무시 */ }
+
 module.exports = { deepen, stationExtra, useExtra, programExtra };

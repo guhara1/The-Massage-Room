@@ -20,6 +20,8 @@ const { operationPolicies, author, privacy, illegal, contact } = require('../dat
 const { lifeDetail, guDetail } = require('../data/localities');
 const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
 const { dongFull } = require('../data/dongs');
+const { incheonDongFull } = require('../data/incheon-dongs');
+Object.assign(dongFull, incheonDongFull);
 const siheung = require('../data/siheung');
 const bucheon = require('../data/bucheon');
 const incheon = require('../data/incheon');
