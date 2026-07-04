@@ -10,8 +10,8 @@ node scripts/build.js      # dist/ 에 전체 사이트 생성
 npm run serve              # 빌드 후 http://localhost:8099 로 미리보기
 ```
 
-- 진입 경로: `/incheon-bucheon-siheung/`
-- 루트(`/`)는 진입 경로로 리다이렉트됩니다.
+- 메인 페이지는 사이트 루트(`/`)에서 바로 서빙됩니다.
+- 하위 경로: `/siheung/`, `/bucheon/`, `/incheon/`, `/area/…`, `/program/…`, `/use/…`, `/check/…` 등
 
 ## 구조
 

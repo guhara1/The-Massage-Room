@@ -5,7 +5,7 @@
   "description": "간다GO · 시흥·부천·인천 출장마사지 서부 수도권 생활권 안내 (정적 사이트 생성기)",
   "scripts": {
     "build": "node scripts/build.js",
-    "serve": "node scripts/build.js && node -e \"const h=require('http'),f=require('fs'),p=require('path'),d='dist';h.createServer((q,s)=>{let u=q.url.split('?')[0];let fp=p.join(d,u);try{if(f.statSync(fp).isDirectory())fp=p.join(fp,'index.html');}catch(e){fp=p.join(d,u,'index.html');}f.readFile(fp,(e,b)=>{if(e){s.writeHead(404);return s.end('404');}const t={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.xml':'application/xml','.txt':'text/plain'}[p.extname(fp)]||'text/plain';s.writeHead(200,{'content-type':t});s.end(b);});}).listen(8099,()=>console.log('http://localhost:8099/incheon-bucheon-siheung/'));\""
+    "serve": "node scripts/build.js && node -e \"const h=require('http'),f=require('fs'),p=require('path'),d='dist';h.createServer((q,s)=>{let u=q.url.split('?')[0];let fp=p.join(d,u);try{if(f.statSync(fp).isDirectory())fp=p.join(fp,'index.html');}catch(e){fp=p.join(d,u,'index.html');}f.readFile(fp,(e,b)=>{if(e){s.writeHead(404);return s.end('404');}const t={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.xml':'application/xml','.txt':'text/plain'}[p.extname(fp)]||'text/plain';s.writeHead(200,{'content-type':t});s.end(b);});}).listen(8099,()=>console.log('http://localhost:8099/'));\""
   },
   "license": "UNLICENSED"
 }

@@ -962,7 +962,7 @@ function run() {
   copyAssets();
   writeSitemapXml();
   writeRobots();
-  writeRootRedirect();
+  if (BASE) writeRootRedirect(); // 루트 서빙 시 홈이 곧 /index.html 이므로 리다이렉트 불필요
 
   const indexable = registry.filter(r => !r.noindex).length;
   console.log(`✓ 생성 완료: 총 ${registry.length} 페이지 (index ${indexable} / noindex ${registry.length - indexable})`);

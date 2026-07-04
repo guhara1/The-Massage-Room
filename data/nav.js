@@ -1,6 +1,7 @@
 'use strict';
 
-const BASE = '/incheon-bucheon-siheung';
+// 사이트 루트에서 바로 서빙(메인 = /). 하위 경로 접두어 없음.
+const BASE = '';
 
 /** 상단 PC 메뉴 */
 const primaryNav = [

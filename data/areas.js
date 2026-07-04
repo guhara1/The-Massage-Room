@@ -6,7 +6,7 @@
  * 생활권별 특징·이동 기준·이용 장소 기준을 다르게 작성한다.
  *
  * 필드
- *  slug        : /incheon-bucheon-siheung/area/<slug>/
+ *  slug        : /area/<slug>/
  *  region      : 소속 권역 (siheung|bucheon|incheon)
  *  name        : 표시명
  *  places      : 포함 생활권

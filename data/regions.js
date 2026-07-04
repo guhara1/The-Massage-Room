@@ -71,18 +71,18 @@ const incheonGu = [
 
 /** 기존 행정구역 안내(검색 수요 대응) — canonical 처리 */
 const legacyGu = [
-  { slug: 'jung-gu', name: '기존 인천 중구', canonicalTo: '/incheon-bucheon-siheung/incheon/jemulpo-gu/',
+  { slug: 'jung-gu', name: '기존 인천 중구', canonicalTo: '/incheon/jemulpo-gu/',
     h1: '기존 인천 중구 안내 — 제물포구·영종구로 분리',
     intro: '인천 행정체계 개편으로 기존 중구 생활권은 제물포구(원도심)와 영종구(공항·영종)로 분리되어 안내됩니다.',
-    links: [['제물포구 안내', '/incheon-bucheon-siheung/incheon/jemulpo-gu/'], ['영종구 안내', '/incheon-bucheon-siheung/incheon/yeongjong-gu/']] },
-  { slug: 'dong-gu', name: '기존 인천 동구', canonicalTo: '/incheon-bucheon-siheung/incheon/jemulpo-gu/',
+    links: [['제물포구 안내', '/incheon/jemulpo-gu/'], ['영종구 안내', '/incheon/yeongjong-gu/']] },
+  { slug: 'dong-gu', name: '기존 인천 동구', canonicalTo: '/incheon/jemulpo-gu/',
     h1: '기존 인천 동구 안내 — 제물포구 생활권으로 연결',
     intro: '기존 동구 생활권은 제물포구 원도심 생활권으로 연결하여 안내합니다.',
-    links: [['제물포구 안내', '/incheon-bucheon-siheung/incheon/jemulpo-gu/']] },
-  { slug: 'seo-gu', name: '기존 인천 서구', canonicalTo: '/incheon-bucheon-siheung/incheon/seohae-gu/',
+    links: [['제물포구 안내', '/incheon/jemulpo-gu/']] },
+  { slug: 'seo-gu', name: '기존 인천 서구', canonicalTo: '/incheon/seohae-gu/',
     h1: '기존 인천 서구 안내 — 서해구·검단구로 분리',
     intro: '기존 서구 생활권은 서해구(청라·가정·검암)와 검단구(검단신도시)로 분리되어 안내됩니다.',
-    links: [['서해구 안내', '/incheon-bucheon-siheung/incheon/seohae-gu/'], ['검단구 안내', '/incheon-bucheon-siheung/incheon/geomdan-gu/']] },
+    links: [['서해구 안내', '/incheon/seohae-gu/'], ['검단구 안내', '/incheon/geomdan-gu/']] },
 ];
 
 /** 핵심 생활권(life) 페이지 — 상위 area로 canonical 연결 */
