@@ -2,10 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://the-massage-room.pages.dev/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/siheung/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/bucheon/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/incheon/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/area/baegot-jeongwang-oido/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/area/eungye-janghyeon-mokgam/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/baegot/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/jeongwang/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/oido-wolgot/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/geobukseom/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/eungye-daeya/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/janghyeon-cityhall/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/mokgam-neunggok/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/wolgot-dong/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/mokgam-dong/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/janggok-dong/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/siheung/neunggok-dong/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/jeongwang-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/oido-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/wolgot-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/siheung-cityhall-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/neunggok-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/siheung-daeya-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/station/sincheon-station/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/siheung-hotel/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/siheung-officetel/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/siheung-apartment-home/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/siheung-coast-stay/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/siheung-industrial-stay/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/sihwa-jeongwang-industrial/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/sihwa-mtv-geobukseom/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/baegot-officetel/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/use/baegot-apartment-home/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/bucheon/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://the-massage-room.pages.dev/incheon/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/area/bucheon-jungdong-sangdong-songnae/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/area/yeokgok-sosa-okgil/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/area/wonjong-gogang-ojeong/</loc><changefreq>weekly</changefreq></url>
@@ -44,13 +71,6 @@
   <url><loc>https://the-massage-room.pages.dev/life/yeongjong-unseo/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/life/jemulpo-dongincheon/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/life/juan-dohwa-michuhol/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/baegot/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/jeongwang/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/oido-wolgot/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/eungye-daeya/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/janghyeon-cityhall/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/mokgam-neunggok/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/siheung/geobukseom/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/program/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/program/swedish/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/program/thai-massage/</loc><changefreq>weekly</changefreq></url>
@@ -76,11 +96,8 @@
   <url><loc>https://the-massage-room.pages.dev/use/yeongjong-airport-city/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/use/songdo-business-district/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/use/namdong-industrial-area/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/use/sihwa-jeongwang-industrial/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/use/sihwa-mtv-geobukseom/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/use/incheon-port-jemulpo/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/use/bucheon-commerce-area/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://the-massage-room.pages.dev/use/baegot-newtown/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/use/geomdan-newtown/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/check/address/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://the-massage-room.pages.dev/check/building-access/</loc><changefreq>weekly</changefreq></url>

@@ -18,6 +18,11 @@ const { regionMains, bucheonGu, incheonGu, legacyGu, lifePages, siheungLife } = 
 const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
 const { lifeDetail, guDetail } = require('../data/localities');
+const siheung = require('../data/siheung');
+
+// 시흥 모듈이 소유하는 URL/슬러그 (generic 빌더에서 중복 생성 방지)
+const SIHEUNG_STATION_SLUGS = new Set(siheung.stations.map(s => s.slug));
+const SIHEUNG_AREA_SLUGS = new Set(siheung.areas.map(a => a.slug));
 
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -850,9 +855,17 @@ ${relatedLinks('예약 전 확인', [['고객 안내', `${BASE}/check/customer-n
 
 function buildSitemapPage(allUrls) {
   const url = `${BASE}/sitemap-page/`;
+  const siheungLinks = [
+    ['시흥 메인', `${BASE}/siheung/`],
+    ...siheung.areas.map(a => [a.h1.split(' · ')[0], BASE + a.url]),
+    ...siheung.details.map(d => [d.h1.split(' · ')[0], BASE + d.url]),
+    ...siheung.stations.map(s => [s.h1.split(' · ')[0], BASE + s.url]),
+    ...siheung.uses.map(u => [u.h1.split(' · ')[0], BASE + u.url]),
+  ];
   const groups = [
     ['권역', regionMains.map(r => [`${r.name}권`, `${BASE}/${r.slug}/`])],
     ['9대 생활권', areas.map(a => [a.name, `${BASE}/area/${a.slug}/`])],
+    ['시흥 상세', siheungLinks],
     ['마사지 프로그램', [['프로그램 전체', `${BASE}/program/`], ...programs.map(p => [p.name, `${BASE}/program/${p.slug}/`])]],
     ['이용 장소', usePlaces.map(u => [u.name, `${BASE}/use/${u.slug}/`])],
     ['공항·항만·산단', useHubs.map(u => [u.name, `${BASE}/use/${u.slug}/`])],
@@ -950,6 +963,159 @@ function writeRootRedirect() {
 }
 
 // ------------------------------------------------------------------ //
+// 시흥 상세(§8 고정 H2) 렌더러 + 섹션 빌더                            //
+// ------------------------------------------------------------------ //
+function pillsHtml(pills) {
+  if (!pills || !pills.length) return '';
+  return `<div class="pill-row">${pills.map(p => `<span class="pill">${esc(p)}</span>`).join('')}</div>`;
+}
+
+/** §8 공통 H2 구조 본문 (area/detail/station/use 공용) */
+function siheungArticleBody(p) {
+  const progLinks = (p.programs || []).map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]);
+  const rel = (p.related || []).map(([l, h]) => [l, h.startsWith('http') ? h : BASE + h]);
+  return `<article class="section"><div class="container article">
+<h1>${esc(p.h1)}</h1>
+${pillsHtml(p.pills)}
+<p>${esc(p.intro)}</p>
+${ctaRow()}
+<h2>이 지역의 생활권 특징</h2>
+${p.character.map(c => `<p>${esc(c)}</p>`).join('')}
+<h2>가까운 역세권과 이동 기준</h2>
+<p>${esc(p.transport)}</p>
+<h2>호텔·숙소 이용 전 확인</h2>
+<p>${esc(p.hotel)}</p>
+<h2>오피스텔 이용 전 확인</h2>
+<p>${esc(p.officetel)}</p>
+<h2>아파트·자택 이용 전 확인</h2>
+<p>${esc(p.home)}</p>
+<h2>산단·해안·신도시 이동 기준</h2>
+<p>${esc(p.move)}</p>
+<h2>마사지 프로그램 선택 기준</h2>
+<p>${esc(p.programHint)}</p>
+<div class="linklist">${progLinks.map(([l, h]) => `<a href="${esc(h)}">${esc(l)}</a>`).join('')}</div>
+<h2>예약 전 체크리스트</h2>
+<ul class="check-list">
+<li>정확한 도로명 주소와 동·호수, 건물명</li>
+<li>공동현관·엘리베이터 출입 방법과 카드키 여부</li>
+<li>방문차량 등록 필요 여부와 주차 동선</li>
+<li>원하는 예약 시간대·프로그램과 이동 거리</li>
+</ul>
+<h2>개인정보 처리 기준</h2>
+<p>예약 확인과 연락에 필요한 최소 정보만 확인하며, 목적이 완료되면 지체 없이 파기합니다. 자세한 내용은 <a href="${BASE}/policy/privacy/">개인정보 처리방침</a>에서 안내합니다.</p>
+<h2>불법·선정적 서비스 불가 안내</h2>
+${ILLEGAL_NOTICE}
+${faqBlock(p.faq)}
+${whwBlock(WHW_DEFAULT.who.replace('시흥·부천·인천 지역', esc((p.pills && p.pills[0]) || '시흥') + ' 생활권'), WHW_DEFAULT.how, WHW_DEFAULT.why)}
+${relatedLinks('관련 지역 보기', rel)}
+</div></article>`;
+}
+
+function buildSiheungDetail(p, crumbTail) {
+  const url = BASE + p.url;
+  writePage(url, layout({
+    url, active: BASE + '/siheung/',
+    title: `${p.title}｜${SITE.brand}`,
+    description: p.desc,
+    breadcrumbs: [{ name: '홈', href: BASE + '/' }, { name: '시흥권', href: BASE + '/siheung/' }, ...crumbTail, { name: p.h1.split(' · ')[0], href: url }],
+    body: siheungArticleBody(p), faq: p.faq,
+  }));
+}
+
+function buildSiheungHub() {
+  const h = siheung.hub;
+  const url = BASE + h.url;
+  const repCard = slug => {
+    const d = siheung.details.find(x => x.slug === slug);
+    return `<div class="card"><h3>${esc(d.h1.split(' · ')[0])}</h3><p>${esc(desc80(d.intro))}</p><a class="card-link" href="${BASE}${d.url}">생활권 안내 →</a></div>`;
+  };
+  const stationLinks = h.stations.map(s => {
+    const st = siheung.stations.find(x => x.slug === s);
+    return [st.h1.split(' · ')[0], BASE + st.url];
+  });
+  const body = `<section class="hero"><div class="container">
+<span class="eyebrow">시흥 · 서부 수도권</span>
+<h1>${esc(h.h1)}</h1>
+<p class="lead">${esc(h.intro)}</p>
+<div class="hero-cta">
+  <a class="btn btn-primary btn-lg" href="${SITE.phoneHref}">${phoneSvg}전화예약 ${esc(SITE.phone)}</a>
+  <a class="btn btn-ghost btn-lg" href="${BASE}/area/baegot-jeongwang-oido/">배곧·정왕·오이도권</a>
+  <a class="btn btn-ghost btn-lg" href="${BASE}/area/eungye-janghyeon-mokgam/">은계·장현·목감권</a>
+</div>
+</div></section>
+<section class="section"><div class="container article"><p>${esc(h.lead)}</p></div></section>
+<section class="section"><div class="container">
+<div class="section-head"><span class="kicker">서부 생활권</span><h2>배곧·정왕·오이도·거북섬</h2></div>
+<div class="grid grid-3">${h.westAreas.map(repCard).join('')}</div>
+</div></section>
+<section class="section"><div class="container">
+<div class="section-head"><span class="kicker">동부 생활권</span><h2>은계·장현·목감</h2></div>
+<div class="grid grid-3">${h.eastAreas.map(repCard).join('')}</div>
+</div></section>
+<section class="section-tight"><div class="container article">
+${h.hubBody.map(([t, b]) => `<h2>${esc(t)}</h2><p>${esc(b)}</p>`).join('')}
+${relatedLinks('역세권·광역교통', stationLinks)}
+${relatedLinks('이용 장소별 확인', h.useLinks.map(([l, u]) => [l, BASE + u]))}
+${relatedLinks('마사지 프로그램', h.programs.map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]))}
+${faqBlock(h.faq)}
+${whwBlock(WHW_DEFAULT.who.replace('시흥·부천·인천 지역', '시흥'), WHW_DEFAULT.how, WHW_DEFAULT.why)}
+</div></section>`;
+  writePage(url, layout({
+    url, active: BASE + '/siheung/',
+    title: `${h.title}｜${SITE.brand}`,
+    description: h.desc,
+    breadcrumbs: crumbs({ name: '시흥권', href: url }),
+    body, faq: h.faq,
+  }));
+}
+
+function buildSiheungDongStub(d) {
+  const url = BASE + d.url;
+  const body = `<article class="section"><div class="container article">
+<h1>${esc(d.name)} 출장마사지 안내</h1>
+<p>${esc(d.name)}은(는) ${esc(d.parentName)} 생활권에 속하는 행정동 구간입니다. 이용 환경과 예약 전 확인 기준은 상위 생활권 안내에서 함께 관리합니다.</p>
+${ctaRow()}
+<div class="linklist"><a href="${BASE}${d.parentUrl}">${esc(d.parentName)} 생활권 안내 →</a><a href="${BASE}/siheung/">시흥 메인 →</a></div>
+${ILLEGAL_NOTICE}
+</div></article>`;
+  writePage(url, layout({
+    url, active: BASE + '/siheung/', noindex: !d.index, canonical: d.index ? null : BASE + d.parentUrl,
+    title: `${d.name} 출장마사지 · ${d.parentName} 생활권｜${SITE.brand}`,
+    description: `${d.name} 출장마사지 이용 기준은 ${d.parentName} 생활권 안내에서 확인하세요.`,
+    breadcrumbs: [{ name: '홈', href: BASE + '/' }, { name: '시흥권', href: BASE + '/siheung/' }, { name: d.parentName, href: BASE + d.parentUrl }, { name: d.name, href: url }],
+    body,
+  }), { noindex: !d.index, canonical: d.index ? null : BASE + d.parentUrl });
+}
+
+function buildSiheungCombo(c) {
+  const url = BASE + c.url;
+  const body = `<article class="section"><div class="container article">
+<h1>${esc(c.name)} 안내</h1>
+<p>${esc(c.region)} 지역의 ${esc(c.programName)} 이용 안내입니다. 자세한 지역 이용 기준과 프로그램 특징은 아래 페이지에서 확인하세요.</p>
+${ctaRow()}
+<div class="linklist"><a href="${BASE}${c.detailUrl}">${esc(c.region)} 생활권 안내 →</a><a href="${BASE}${c.programUrl}">${esc(c.programName)} 프로그램 →</a></div>
+${ILLEGAL_NOTICE}
+</div></article>`;
+  writePage(url, layout({
+    url, active: BASE + '/siheung/', noindex: true, canonical: BASE + c.detailUrl,
+    title: `${c.name} 출장마사지｜${SITE.brand}`,
+    description: `${c.region} ${c.programName} 이용 안내. 지역·프로그램 페이지로 연결합니다.`,
+    breadcrumbs: [{ name: '홈', href: BASE + '/' }, { name: '시흥권', href: BASE + '/siheung/' }, { name: c.name, href: url }],
+    body,
+  }), { noindex: true, canonical: BASE + c.detailUrl });
+}
+
+function buildSiheungSection() {
+  buildSiheungHub();
+  siheung.areas.forEach(a => buildSiheungDetail(a, []));
+  siheung.details.forEach(d => buildSiheungDetail(d, d.crumbParent ? [{ name: d.crumbParent[0], href: BASE + d.crumbParent[1] }] : []));
+  siheung.stations.forEach(s => buildSiheungDetail(s, [{ name: '역세권', href: BASE + '/siheung/' }]));
+  siheung.uses.forEach(u => buildSiheungDetail(u, [{ name: '이용 장소', href: BASE + '/siheung/' }]));
+  siheung.noindexDongs.forEach(buildSiheungDongStub);
+  siheung.programCombos.forEach(buildSiheungCombo);
+}
+
+// ------------------------------------------------------------------ //
 // 실행                                                                //
 // ------------------------------------------------------------------ //
 function run() {
@@ -958,18 +1124,19 @@ function run() {
 
   // 형제 내부링크 인덱스(area slug → 세부지역) 사전 구성
   lifePages.forEach(l => registerLocality(l.area, l.name, `${BASE}/life/${l.slug}/`));
-  siheungLife.forEach(l => registerLocality(l.area, l.name, `${BASE}/siheung/${l.slug}/`));
 
   buildHome();
-  regionMains.forEach(buildRegionMain);
-  areas.forEach(buildAreaPage);
+  // 시흥은 전용 상세 모듈이 담당 (허브·권역·세부·역세권·이용장소·행정동)
+  buildSiheungSection();
+
+  regionMains.filter(r => r.slug !== 'siheung').forEach(buildRegionMain);
+  areas.filter(a => !SIHEUNG_AREA_SLUGS.has(a.slug)).forEach(buildAreaPage);
 
   bucheonGu.forEach(g => buildGuPage(g, 'bucheon', '부천'));
   incheonGu.forEach(g => buildGuPage(g, 'incheon', '인천'));
   legacyGu.forEach(buildLegacyGuPage);
 
   lifePages.forEach(l => buildLifePage(l, `${BASE}/life`, 'incheon', '인천'));
-  siheungLife.forEach(l => buildLifePage(l, `${BASE}/siheung`, 'siheung', '시흥'));
 
   buildProgramIndex();
   programs.forEach(buildProgramPage);
@@ -977,7 +1144,7 @@ function run() {
   usePlaces.forEach(u => buildUsePage(u, 'place'));
   useHubs.forEach(u => buildUsePage(u, 'hub'));
   checks.forEach(buildCheckPage);
-  stations.forEach(buildStationPage);
+  stations.filter(s => !SIHEUNG_STATION_SLUGS.has(s.slug)).forEach(buildStationPage);
 
   operationPolicies.forEach(p => buildSimpleDoc(p, '운영 기준', `${BASE}/policy/operation/`, `${BASE}/policy/operation/`));
   buildSimpleDoc(author, '운영 기준', `${BASE}/policy/operation/`, null);
