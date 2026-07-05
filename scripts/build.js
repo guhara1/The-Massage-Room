@@ -20,6 +20,8 @@ const { operationPolicies, author, privacy, illegal, contact } = require('../dat
 const { lifeDetail, guDetail } = require('../data/localities');
 const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
 const { dongFull } = require('../data/dongs');
+let stationGuide = {}, comboGuide = {};
+try { ({ stationGuide = {}, comboGuide = {} } = require('../data/guides')); } catch (e) { /* 아직 생성 전 */ }
 const { incheonDongFull } = require('../data/incheon-dongs');
 Object.assign(dongFull, incheonDongFull);
 const siheung = require('../data/siheung');
@@ -521,16 +523,9 @@ ${relatedLinks('다른 프로그램 보기', programs.filter(x => x.slug !== p.s
   }));
 }
 
-// 지역 전용 모듈 페이지와 중복되는 이용장소 허브 → noindex + canonical 통합
-const USE_DUP_CANONICAL = {
-  'incheon-airport-accommodation': '/use/incheon-airport-stay/',
-  'yeongjong-airport-city': '/incheon/yeongjong-unseo/',
-  'songdo-business-district': '/use/incheon-songdo-business/',
-  'namdong-industrial-area': '/incheon/namdong-gu/',
-  'incheon-port-jemulpo': '/incheon/jemulpo-dongincheon/',
-  'bucheon-commerce-area': '/use/bucheon-commerce-stay/',
-  'geomdan-newtown': '/incheon/geomdan-newtown/',
-};
+// 이용장소 허브 → 고유 이용목적 콘텐츠(data/deepen.js useHubDeepen)로 심화하여 index 전환.
+// 지역 상세와 중복되지 않도록 '이용 장소·상황' 관점으로 차별화한다.
+const USE_DUP_CANONICAL = {};
 
 function buildUsePage(u, kind) {
   const url = `${BASE}/use/${u.slug}/`;
@@ -747,6 +742,46 @@ ${ILLEGAL_NOTICE}
 function buildStationPage(s) {
   const url = `${BASE}/station/${s.slug}/`;
   const a = areaBySlug[s.area];
+  const g = stationGuide[s.slug];
+  if (g) {
+    // 고유 본문 확보 → index, 자기 자신 canonical
+    const relPairs = (g.related || []).map(r => [r[0], BASE + r[1]]);
+    const body = `<article class="section"><div class="container article">
+<h1>${esc(s.name)} 인근 출장마사지 이용 안내</h1>
+<p>${esc(g.intro)}</p>
+${ctaRow()}
+<table class="meta-table"><tbody>
+<tr><th>역·노선</th><td>${esc(s.name)} (${esc(s.line)})</td></tr>
+<tr><th>생활권</th><td><a href="${BASE}/area/${a.slug}/">${esc(a.name)}</a></td></tr>
+<tr><th>예약·문의</th><td>전화 <a href="${SITE.phoneHref}">${esc(SITE.phone)}</a> · <a href="${esc(SITE.telegram.reserve)}" target="_blank" rel="noopener nofollow">텔레그램</a></td></tr>
+</tbody></table>
+<h2>${esc(s.name)} 역세권 특징</h2>
+${g.character.map(c => `<p>${esc(c)}</p>`).join('')}
+<p>${esc(g.surroundings)}</p>
+<h2>교통·접근 안내</h2>
+<p>${esc(g.access)}</p>
+<h2>숙소·건물 방문 확인</h2>
+<p>${esc(g.stay)}</p>
+<h2>이용 안내와 프로그램</h2>
+${g.deepen.map(x => `<p>${esc(x)}</p>`).join('')}
+<p>${esc(g.programHint)}</p>
+<ul class="check-list"><li>정확한 출구·건물명·동 위치 확인</li><li>공동현관·방문차량 등록 방법</li><li>야간 이용 시 로비 운영 시간</li><li>이동 거리·이동료 기준</li></ul>
+<div class="callout">역 출구별 개별 페이지 대신 생활권 단위로 이용 기준을 안내합니다. 방문 가능 여부는 상담 시 최종 확인됩니다.</div>
+<h2>불법·선정적 서비스 불가 안내</h2>
+${ILLEGAL_NOTICE}
+${faqBlock(g.faq)}
+${whwBlock(`이 콘텐츠는 ${esc(s.name)} 인근 출장마사지 이용 전 확인 항목을 생활권 단위로 안내하기 위해 작성되었습니다.`, WHW_DEFAULT.how, WHW_DEFAULT.why)}
+${relatedLinks('함께 보기', relPairs)}
+</div></article>`;
+    writePage(url, layout({
+      url, active: null,
+      title: `${s.name} 인근 출장마사지 안내｜${SITE.brand}`,
+      description: `${s.name}(${s.line}) 인근 ${a.name} 생활권 출장마사지 이용 안내`.slice(0, 80),
+      breadcrumbs: crumbs({ name: a.name, href: `${BASE}/area/${a.slug}/` }, { name: s.name, href: url }),
+      body, faq: g.faq,
+    }));
+    return;
+  }
   const body = `<article class="section"><div class="container article">
 <h1>${esc(s.name)} 인근 출장마사지 이용 안내</h1>
 <p>${esc(s.name)}(${esc(s.line)}) 인근은 ${esc(a.name)} 생활권에 속합니다. 역 출구별 개별 안내가 아닌 생활권 단위로 이용 기준을 안내합니다.</p>
@@ -1180,6 +1215,43 @@ ${ILLEGAL_NOTICE}
 
 function buildRegionCombo(c, reg) {
   const url = BASE + c.url;
+  const g = comboGuide[c.slug];
+  if (g) {
+    // 고유 본문 확보 → index, 자기 자신 canonical
+    const relPairs = (g.related || []).map(r => [r[0], BASE + r[1]]);
+    const body = `<article class="section"><div class="container article">
+<h1>${esc(c.name)} 출장마사지 이용 안내</h1>
+<p>${esc(g.intro)}</p>
+${ctaRow()}
+<table class="meta-table"><tbody>
+<tr><th>지역</th><td><a href="${BASE}${c.detailUrl}">${esc(c.region)} 생활권 안내</a></td></tr>
+<tr><th>프로그램</th><td><a href="${BASE}${c.programUrl}">${esc(c.programName)}</a></td></tr>
+<tr><th>예약·문의</th><td>전화 <a href="${SITE.phoneHref}">${esc(SITE.phone)}</a> · <a href="${esc(SITE.telegram.reserve)}" target="_blank" rel="noopener nofollow">텔레그램</a></td></tr>
+</tbody></table>
+<h2>${esc(c.region)}에서의 ${esc(c.programName)} 이용 환경</h2>
+${g.regionContext.map(x => `<p>${esc(x)}</p>`).join('')}
+<h2>${esc(c.programName)} 프로그램 특징</h2>
+<p>${esc(g.programBody)}</p>
+<h2>이런 분께 맞습니다</h2>
+<p>${esc(g.target)}</p>
+<h2>준비·주의 사항</h2>
+<p>${esc(g.prep)}</p>
+${g.deepen.map(x => `<p>${esc(x)}</p>`).join('')}
+<div class="callout">프로그램 강도·집중 부위는 상담 시 조율하며, 이동료 기준은 지역·거리에 따라 최종 확인됩니다.</div>
+<h2>불법·선정적 서비스 불가 안내</h2>
+${ILLEGAL_NOTICE}
+${faqBlock(g.faq)}
+${relatedLinks('함께 보기', relPairs)}
+</div></article>`;
+    writePage(url, layout({
+      url, active: reg.hubHref,
+      title: `${c.name} 출장마사지 안내｜${SITE.brand}`,
+      description: `${c.region} ${c.programName} 출장마사지 이용 안내와 준비 사항 안내`.slice(0, 80),
+      breadcrumbs: [{ name: '홈', href: BASE + '/' }, { name: reg.name + '권', href: reg.hubHref }, { name: c.name, href: url }],
+      body, faq: g.faq,
+    }));
+    return;
+  }
   const body = `<article class="section"><div class="container article">
 <h1>${esc(c.name)} 안내</h1>
 <p>${esc(c.region)} 지역의 ${esc(c.programName)} 이용 안내입니다. 자세한 지역 이용 기준과 프로그램 특징은 아래 페이지에서 확인하세요.</p>
