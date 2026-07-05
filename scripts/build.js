@@ -92,7 +92,7 @@ function header(active) {
 }
 
 function heroMedia() {
-  return `<div class="hero-media"><img src="${esc(HERO_IMG)}" alt="간다GO 시흥·부천·인천 출장마사지 안내" width="560" height="620" fetchpriority="high" decoding="async"></div>`;
+  return `<div class="hero-media"><img src="${esc(HERO_IMG)}" alt="간다GO 시흥·부천·인천 출장마사지 안내" width="560" height="420" fetchpriority="high" decoding="async"></div>`;
 }
 
 function floatingCall() {
