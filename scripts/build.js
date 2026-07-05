@@ -764,6 +764,7 @@ ${g.character.map(c => `<p>${esc(c)}</p>`).join('')}
 <p>${esc(g.stay)}</p>
 <h2>이용 안내와 프로그램</h2>
 ${g.deepen.map(x => `<p>${esc(x)}</p>`).join('')}
+${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}
 <p>${esc(g.programHint)}</p>
 <ul class="check-list"><li>정확한 출구·건물명·동 위치 확인</li><li>공동현관·방문차량 등록 방법</li><li>야간 이용 시 로비 운영 시간</li><li>이동 거리·이동료 기준</li></ul>
 <div class="callout">역 출구별 개별 페이지 대신 생활권 단위로 이용 기준을 안내합니다. 방문 가능 여부는 상담 시 최종 확인됩니다.</div>
@@ -1237,6 +1238,7 @@ ${g.regionContext.map(x => `<p>${esc(x)}</p>`).join('')}
 <h2>준비·주의 사항</h2>
 <p>${esc(g.prep)}</p>
 ${g.deepen.map(x => `<p>${esc(x)}</p>`).join('')}
+${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}
 <div class="callout">프로그램 강도·집중 부위는 상담 시 조율하며, 이동료 기준은 지역·거리에 따라 최종 확인됩니다.</div>
 <h2>불법·선정적 서비스 불가 안내</h2>
 ${ILLEGAL_NOTICE}
