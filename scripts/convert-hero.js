@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
 const DIR = path.join(__dirname, '..', 'src', 'assets');
 const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const TARGET_BYTES = 52000;   // ~50KB
-const MAX_WIDTH = 1000;       // 히어로 표시 폭 고려
+const MAX_WIDTH = 880;        // 히어로 표시 폭(560px) × 레티나 고려, 용량·품질 균형
 
 function pickInput() {
   if (process.argv[2]) return path.resolve(process.argv[2]);
@@ -39,12 +39,17 @@ function pickInput() {
   const result = await page.evaluate(async ({ src, maxW, target }) => {
     const img = new Image();
     await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = src; });
-    const scale = Math.min(1, maxW / img.naturalWidth);
-    const w = Math.round(img.naturalWidth * scale);
-    const h = Math.round(img.naturalHeight * scale);
+    // 4:3 중앙 크롭 → 목표 폭에 맞춰 스케일 (출력 자체를 정확히 4:3으로)
+    const RATIO = 4 / 3;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    let sw = iw, sh = Math.round(iw / RATIO);
+    if (sh > ih) { sh = ih; sw = Math.round(ih * RATIO); }
+    const sx = Math.round((iw - sw) / 2), sy = Math.round((ih - sh) / 2);
+    const w = Math.min(maxW, sw);
+    const h = Math.round(w / RATIO);
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
     // 품질을 낮춰가며 목표 용량 이하로
     let q = 0.92, out = '';
     for (let i = 0; i < 12; i++) {
