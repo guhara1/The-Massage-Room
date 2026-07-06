@@ -417,3 +417,21 @@ strong { color: var(--text-0); font-weight: 700; }
 .review-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); color: var(--text-2); font-size: .82rem; }
 .review-author { font-weight: 600; color: var(--text-1); }
 .reviews-note { text-align: center; color: var(--text-2); font-size: .82rem; margin-top: 20px; }
+
+/* 롱테일 내부링크 클러스터 */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 9px; }
+.tag-cloud a {
+  font-size: .9rem; color: var(--text-1); background: var(--surface-2);
+  border: 1px solid var(--line); padding: 8px 14px; border-radius: var(--r-pill);
+  transition: border-color .15s, color .15s;
+}
+.tag-cloud a:hover { border-color: var(--accent-500); color: var(--text-0); }
+.footer-longtail { border-top: 1px solid var(--line); }
+.footer-longtail .container { padding: 22px 20px; }
+.footer-longtail h4 { color: var(--text-1); font-size: .9rem; margin: 0 0 12px; }
+.footer-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.footer-tags a {
+  font-size: .82rem; color: var(--text-2); background: var(--surface-1);
+  border: 1px solid var(--line); padding: 6px 12px; border-radius: var(--r-pill);
+}
+.footer-tags a:hover { color: var(--text-0); border-color: var(--line-strong); }

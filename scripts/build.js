@@ -147,6 +147,14 @@ function footer() {
       </div>
     </div>
   </div>
+  <div class="footer-longtail">
+    <div class="container">
+      <h4>지역별 인기 안내</h4>
+      <nav class="footer-tags" aria-label="지역별 인기 안내">
+        ${FOOTER_LONGTAIL.map(([l, u]) => `<a href="${BASE}${u}">${esc(l)}</a>`).join('\n        ')}
+      </nav>
+    </div>
+  </div>
   <div class="footer-bottom">
     <div class="container">
       <span>© ${esc(SITE.brand)} · 시흥·부천·인천 출장마사지 지역 안내</span>
@@ -155,6 +163,48 @@ function footer() {
   </div>
 </footer>`;
 }
+
+// 푸터 롱테일 내부링크 클러스터(전 페이지 노출)
+const FOOTER_LONGTAIL = [
+  ['배곧 출장마사지', '/siheung/baegot/'],
+  ['정왕 출장마사지', '/siheung/jeongwang/'],
+  ['시흥시청 홈타이', '/siheung/janghyeon-cityhall/'],
+  ['오이도 발마사지', '/siheung/oido-wolgot/'],
+  ['부천 중동·상동 출장마사지', '/bucheon/jungdong-sangdong/'],
+  ['송내 스웨디시', '/bucheon/songnae/'],
+  ['부천역 출장마사지', '/bucheon/simgok-dong/'],
+  ['역곡·소사 출장마사지', '/bucheon/yeokgok/'],
+  ['송도 출장마사지', '/incheon/songdo-international/'],
+  ['부평 출장마사지', '/incheon/bupyeong-station/'],
+  ['구월·인천시청 출장마사지', '/incheon/guwol-incheon-cityhall/'],
+  ['청라 스웨디시', '/incheon/cheongna-lu1/'],
+  ['검단신도시 출장마사지', '/incheon/geomdan-newtown/'],
+  ['영종·공항 출장마사지', '/incheon/yeongjong-unseo/'],
+  ['주안·도화 출장마사지', '/incheon/juan-dohwa/'],
+  ['계산·작전 홈타이', '/incheon/gyesan-jakjeon/'],
+];
+
+// 홈 롱테일 클러스터(동·프로그램 조합, 세부 지역으로 딥링크)
+const HOME_LONGTAIL = [
+  ['배곧1동 스웨디시', '/siheung/baegot-1-dong/'],
+  ['정왕1동 딥티슈', '/siheung/jeongwang-1-dong/'],
+  ['은행동 출장마사지', '/siheung/eunhaeng-dong/'],
+  ['대야동 홈타이', '/siheung/daeya-dong/'],
+  ['심곡동 출장마사지', '/bucheon/simgok-dong/'],
+  ['소사본동 스웨디시', '/bucheon/sosabon-dong/'],
+  ['도당동 출장마사지', '/bucheon/dodang-dong/'],
+  ['송도1동 아로마', '/incheon/songdo-1-dong/'],
+  ['송도2동 출장마사지', '/incheon/songdo-2-dong/'],
+  ['부평1동 출장마사지', '/incheon/bupyeong-1-dong/'],
+  ['구월1동 스웨디시', '/incheon/guwol-1-dong/'],
+  ['주안1동 출장마사지', '/incheon/juan-1-dong/'],
+  ['청라1동 홈타이', '/incheon/cheongna-1-dong/'],
+  ['계산1동 출장마사지', '/incheon/gyesan-1-dong/'],
+  ['도화1동 출장마사지', '/incheon/dohwa-1-dong/'],
+  ['만수1동 스웨디시', '/incheon/mansu-1-dong/'],
+  ['간석1동 출장마사지', '/incheon/ganseok-1-dong/'],
+  ['동춘1동 출장마사지', '/incheon/dongchun-1-dong/'],
+];
 
 // ------------------------------------------------------------------ //
 // 스키마 (JSON-LD)                                                    //
@@ -944,6 +994,14 @@ ${heroMedia()}
 <div class="section-head"><span class="kicker">프로그램</span><h2>마사지 프로그램 안내</h2><p>압·방식·이용 장소 기준을 프로그램별로 확인하세요.</p></div>
 <div class="grid grid-3">${progCards}</div>
 <div class="lead-cta"><a class="btn btn-outline" href="${BASE}/program/">프로그램 전체 보기 →</a></div>
+</div></section>
+
+<section class="section" id="longtail"><div class="container">
+<div class="section-head"><span class="kicker">지역·프로그램 바로가기</span><h2>동네·프로그램별 출장마사지 안내</h2>
+<p>실제 생활권과 프로그램을 함께 검색하는 분들을 위해 세부 지역 안내로 바로 연결합니다.</p></div>
+<nav class="tag-cloud" aria-label="동네·프로그램별 안내">
+${HOME_LONGTAIL.map(([l, u]) => `<a href="${BASE}${u}">${esc(l)}</a>`).join('\n')}
+</nav>
 </div></section>
 
 <section class="section"><div class="container article">
