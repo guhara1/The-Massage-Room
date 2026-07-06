@@ -19,6 +19,7 @@ const { stations } = require('../data/stations');
 const { operationPolicies, author, privacy, illegal, contact } = require('../data/policies');
 const { lifeDetail, guDetail } = require('../data/localities');
 const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
+const { reviews, aggregate } = require('../data/reviews');
 const { dongFull } = require('../data/dongs');
 let stationGuide = {}, comboGuide = {};
 try { ({ stationGuide = {}, comboGuide = {} } = require('../data/guides')); } catch (e) { /* 아직 생성 전 */ }
@@ -160,6 +161,27 @@ function footer() {
 //  사용: WebPage, BreadcrumbList, Organization, FAQPage, ImageObject  //
 //  미사용: LocalBusiness, Review, AggregateRating                     //
 // ------------------------------------------------------------------ //
+function reviewNodes() {
+  return reviews.map(r => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.author },
+    datePublished: r.date,
+    name: r.title,
+    reviewBody: r.body,
+    reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5', worstRating: '1' },
+  }));
+}
+
+function aggregateRatingNode() {
+  return {
+    '@type': 'AggregateRating',
+    ratingValue: aggregate.ratingValue,
+    reviewCount: String(aggregate.reviewCount),
+    bestRating: String(aggregate.bestRating),
+    worstRating: String(aggregate.worstRating),
+  };
+}
+
 function organizationSchema() {
   return {
     '@type': 'Organization',
@@ -169,6 +191,22 @@ function organizationSchema() {
     telephone: SITE.phone,
     areaServed: ['시흥', '부천', '인천'],
     sameAs: [SITE.telegram.reserve],
+    aggregateRating: aggregateRatingNode(),
+    review: reviewNodes(),
+  };
+}
+
+// 서비스(출장마사지) 스키마 — 제공 지역·연락·평점 포함
+function serviceSchema() {
+  return {
+    '@type': 'Service',
+    '@id': abs(BASE + '/#service'),
+    name: SITE.brand + ' 출장마사지',
+    serviceType: '출장마사지',
+    provider: { '@id': abs('/#organization') },
+    areaServed: ['시흥', '부천', '인천'],
+    url: abs(BASE + '/'),
+    aggregateRating: aggregateRatingNode(),
   };
 }
 
@@ -201,6 +239,7 @@ function buildSchema({ url, title, description, breadcrumbs, faq, image }) {
     publisher: { '@id': abs('/#organization') },
   });
   graph.push(organizationSchema());
+  graph.push(serviceSchema());
   if (breadcrumbs && breadcrumbs.length) {
     graph.push({
       '@type': 'BreadcrumbList',
@@ -321,6 +360,29 @@ function relatedLinks(title, links) {
   return `<h2>${esc(title)}</h2><div class="linklist">${
     links.map(([label, href]) => `<a href="${esc(href)}">${esc(label)}</a>`).join('')
   }</div>`;
+}
+
+function stars(n) {
+  const full = '★'.repeat(n), empty = '☆'.repeat(5 - n);
+  return `<span class="stars" aria-hidden="true">${full}${empty}</span><span class="sr-only">별점 ${n}점 만점에 5점</span>`;
+}
+
+/** 고객 후기 섹션(온페이지) — 스키마와 동일 콘텐츠 노출 */
+function reviewsSection() {
+  const cards = reviews.map(r => `<figure class="review-card">
+<div class="review-top">${stars(r.rating)}<span class="review-rank">${r.rating.toFixed(1)}</span></div>
+<figcaption class="review-title">${esc(r.title)}</figcaption>
+<blockquote>${esc(r.body)}</blockquote>
+<div class="review-meta"><span class="review-author">${esc(r.author)}</span><time datetime="${esc(r.date)}">${esc(r.date.replace(/-/g, '.'))}</time></div>
+</figure>`).join('');
+  return `<section class="section reviews-section" aria-labelledby="reviews-h"><div class="container">
+<div class="reviews-head">
+<h2 id="reviews-h">고객 후기</h2>
+<p class="reviews-summary"><span class="reviews-score">${aggregate.ratingValue}</span> / 5.0 · 후기 ${aggregate.reviewCount}건 ${stars(Math.round(aggregate.ratingValue))}</p>
+</div>
+<div class="review-grid">${cards}</div>
+<p class="reviews-note">후기는 이용 고객이 남겨주신 내용을 바탕으로 하며, 개인정보 보호를 위해 이름 일부를 가렸습니다.</p>
+</div></section>`;
 }
 
 // area slug → 같은 생활권 세부지역 목록(형제 내부링크용)
@@ -889,7 +951,8 @@ ${heroMedia()}
 <div class="linklist">${useCards}</div>
 ${faqBlock(faq)}
 ${whwBlock(WHW_DEFAULT.who, WHW_DEFAULT.how, WHW_DEFAULT.why)}
-</div></section>`;
+</div></section>
+${reviewsSection()}`;
 
   writePage(url, layout({
     url, active: url,
@@ -1244,7 +1307,8 @@ ${relatedLinks('이용 장소별 확인', h.useLinks.map(([l, u]) => [l, BASE + 
 ${relatedLinks('마사지 프로그램', h.programs.map(s => [programBySlug[s].name, `${BASE}/program/${s}/`]))}
 ${faqBlock(h.faq)}
 ${whwBlock(WHW_DEFAULT.who.replace('시흥·부천·인천 지역', esc(reg.name)), WHW_DEFAULT.how, WHW_DEFAULT.why)}
-</div></section>`;
+</div></section>
+${reviewsSection()}`;
   writePage(url, layout({
     url, active: reg.hubHref,
     title: `${h.title}｜${SITE.brand}`,
