@@ -62,6 +62,12 @@ const areaBySlug = Object.fromEntries(areas.map(a => [a.slug, a]));
 const programBySlug = Object.fromEntries(programs.map(p => [p.slug, p]));
 
 const abs = u => SITE.baseUrl.replace(/\/$/, '') + u;
+const escXml = esc; // esc가 &<>"' 를 모두 처리하므로 XML에도 안전
+
+// 빌드 시각(사이트맵 lastmod / RSS pubDate)
+const BUILD_NOW = new Date();
+const BUILD_DATE = BUILD_NOW.toISOString().slice(0, 10);
+const BUILD_RFC822 = BUILD_NOW.toUTCString();
 
 // 등록된 모든 페이지(사이트맵/내부링크 검증용)
 const registry = [];
@@ -247,6 +253,8 @@ function layout(opts) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(metaDesc)}">
 ${robots}
+${SITE.siteVerification && SITE.siteVerification.naver ? `<meta name="naver-site-verification" content="${esc(SITE.siteVerification.naver)}">` : ''}
+${SITE.siteVerification && SITE.siteVerification.google ? `<meta name="google-site-verification" content="${esc(SITE.siteVerification.google)}">` : ''}
 <link rel="canonical" href="${esc(canon)}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(SITE.brand)}">
@@ -377,7 +385,8 @@ function writePage(url, html, meta = {}) {
   const file = url.endsWith('/') ? path.join(dir, 'index.html') : path.join(DIST, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
-  registry.push({ url, noindex: !!meta.noindex, canonical: meta.canonical || url });
+  const tm = html.match(/<title>([^<]*)<\/title>/);
+  registry.push({ url, noindex: !!meta.noindex, canonical: meta.canonical || url, title: tm ? tm[1] : url });
 }
 
 function crumbs(...parts) {
@@ -1038,9 +1047,22 @@ function copyAssets() {
   fs.writeFileSync(path.join(assets, 'og-cover.svg'), og);
 }
 
+// 페이지 유형별 우선순위·변경빈도(색인 신호)
+function sitemapMeta(url) {
+  if (url === BASE + '/' || url === '/') return { p: '1.0', f: 'daily' };
+  if (/^(\/(siheung|bucheon|incheon))\/$/.test(url)) return { p: '0.9', f: 'daily' };
+  if (/^\/area\//.test(url)) return { p: '0.8', f: 'weekly' };
+  if (/^\/(siheung|bucheon|incheon)\/[^/]+\/$/.test(url)) return { p: '0.7', f: 'weekly' };
+  if (/^\/(program|use|station)\//.test(url)) return { p: '0.6', f: 'weekly' };
+  if (/^\/(check|policy)\//.test(url)) return { p: '0.4', f: 'monthly' };
+  return { p: '0.6', f: 'weekly' };
+}
+
 function writeSitemapXml() {
+  const lastmod = BUILD_DATE;
   const urls = registry.filter(r => !r.noindex).map(r => {
-    return `  <url><loc>${abs(r.url)}</loc><changefreq>weekly</changefreq></url>`;
+    const m = sitemapMeta(r.url);
+    return `  <url><loc>${abs(r.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>${m.f}</changefreq><priority>${m.p}</priority></url>`;
   }).join('\n');
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -1049,10 +1071,51 @@ ${urls}
   fs.writeFileSync(path.join(DIST, 'sitemap.xml'), xml);
 }
 
+// 네이버(Yeti)·구글 등 색인용 RSS 2.0 피드
+function writeRssXml() {
+  const items = registry.filter(r => !r.noindex)
+    .sort((a, b) => parseFloat(sitemapMeta(b.url).p) - parseFloat(sitemapMeta(a.url).p))
+    .slice(0, 300)
+    .map(r => `    <item><title>${escXml(r.title)}</title><link>${abs(r.url)}</link><guid isPermaLink="true">${abs(r.url)}</guid><pubDate>${BUILD_RFC822}</pubDate></item>`)
+    .join('\n');
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${escXml(SITE.brand)} · 시흥·부천·인천 출장마사지</title>
+    <link>${abs('/')}</link>
+    <atom:link href="${abs('/rss.xml')}" rel="self" type="application/rss+xml"/>
+    <description>${escXml(SITE.tagline)}</description>
+    <language>ko</language>
+    <lastBuildDate>${BUILD_RFC822}</lastBuildDate>
+${items}
+  </channel>
+</rss>\n`;
+  fs.writeFileSync(path.join(DIST, 'rss.xml'), rss);
+}
+
 function writeRobots() {
+  const sm = abs('/sitemap.xml');
   const txt = `User-agent: *
 Allow: /
-Sitemap: ${abs('/sitemap.xml')}
+
+# 구글
+User-agent: Googlebot
+Allow: /
+
+# 네이버
+User-agent: Yeti
+Allow: /
+
+# 빙
+User-agent: Bingbot
+Allow: /
+
+# 다음(카카오)
+User-agent: Daum
+Allow: /
+
+Sitemap: ${sm}
+Sitemap: ${abs('/rss.xml')}
 `;
   fs.writeFileSync(path.join(DIST, 'robots.txt'), txt);
 }
@@ -1323,6 +1386,7 @@ function run() {
 
   copyAssets();
   writeSitemapXml();
+  writeRssXml();
   writeRobots();
   if (BASE) writeRootRedirect(); // 루트 서빙 시 홈이 곧 /index.html 이므로 리다이렉트 불필요
 

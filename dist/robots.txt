@@ -1,3 +1,21 @@
 User-agent: *
 Allow: /
+
+# 구글
+User-agent: Googlebot
+Allow: /
+
+# 네이버
+User-agent: Yeti
+Allow: /
+
+# 빙
+User-agent: Bingbot
+Allow: /
+
+# 다음(카카오)
+User-agent: Daum
+Allow: /
+
 Sitemap: https://the-massage-room.pages.dev/sitemap.xml
+Sitemap: https://the-massage-room.pages.dev/rss.xml

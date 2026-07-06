@@ -33,6 +33,12 @@ const SITE = {
 
   // 문의/운영
   hoursNote: '예약·상담은 전화 및 텔레그램으로 안내합니다.',
+
+  // 검색엔진 사이트 소유확인 (값이 있으면 <head>에 메타태그 출력)
+  siteVerification: {
+    naver: '7dd70cf362ea615d8f56359e476842234c18db34',
+    google: '', // 구글 서치콘솔 HTML 태그 방식 사용 시 여기에 content 값
+  },
 };
 
 module.exports = { SITE };
