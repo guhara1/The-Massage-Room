@@ -435,3 +435,9 @@ strong { color: var(--text-0); font-weight: 700; }
   border: 1px solid var(--line); padding: 6px 12px; border-radius: var(--r-pill);
 }
 .footer-tags a:hover { color: var(--text-0); border-color: var(--line-strong); }
+
+/* 구 개요 허브 — 행정동 카드 */
+.gu-dong-grid { margin: 16px 0 8px; }
+.card-mini { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 18px; text-decoration: none; }
+.card-mini h3 { margin: 0; font-size: 1rem; color: var(--text-0); }
+.card-mini .card-link { font-size: .82rem; color: var(--accent-500); white-space: nowrap; }

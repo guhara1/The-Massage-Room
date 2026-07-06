@@ -20,6 +20,9 @@ const { operationPolicies, author, privacy, illegal, contact } = require('../dat
 const { lifeDetail, guDetail } = require('../data/localities');
 const { deepen, stationExtra, useExtra, programExtra } = require('../data/deepen');
 const { reviews, aggregate } = require('../data/reviews');
+let incheonDongList = [];
+try { ({ incheonDongList = [] } = require('../data/incheon-dongs')); } catch (e) { /* 생성 전 */ }
+const incheonDongBySlug = Object.fromEntries(incheonDongList.map(d => [d.slug, d]));
 const { dongFull } = require('../data/dongs');
 let stationGuide = {}, comboGuide = {};
 try { ({ stationGuide = {}, comboGuide = {} } = require('../data/guides')); } catch (e) { /* 아직 생성 전 */ }
@@ -798,20 +801,44 @@ ${ILLEGAL_NOTICE}
 
 function buildLegacyGuPage(g) {
   const url = `${BASE}/incheon/${g.slug}/`;
-  const body = `<article class="section"><div class="container article">
+  const dongCards = (g.dongSlugs || []).map(s => {
+    const d = incheonDongBySlug[s];
+    if (!d) return '';
+    return `<a class="card card-mini" href="${BASE}${d.url}"><h3>${esc(d.name)}</h3><span class="card-link">이용 안내 →</span></a>`;
+  }).join('');
+  const dongCount = (g.dongSlugs || []).filter(s => incheonDongBySlug[s]).length;
+  const body = `<section class="hero hero-sub"><div class="container hero-grid">
+<div class="hero-copy">
+<span class="eyebrow">인천 · ${esc(g.gu)}</span>
 <h1>${esc(g.h1)}</h1>
-<p>${esc(g.intro)}</p>
-<div class="callout">이 페이지는 기존 검색 수요 안내용이며, 아래 새 행정구역 안내로 연결됩니다.</div>
-<div class="linklist">${g.links.map(([l, h]) => `<a href="${esc(h)}">${esc(l)} →</a>`).join('')}</div>
+<p class="lead">${esc(g.intro)}</p>
+${ctaRow()}
+</div>
+${heroMedia()}
+</div></section>
+<article class="section"><div class="container article">
+<h2>${esc(g.gu)} 생활권 특징</h2>
+${g.character.map(c => `<p>${esc(c)}</p>`).join('')}
+<h2>${esc(g.gu)} 행정동 안내 (${dongCount}개 동)</h2>
+<p>아래 각 동 페이지에서 생활권 단위 이용 기준을 개별적으로 확인하실 수 있습니다.</p>
+<div class="grid grid-3 gu-dong-grid">${dongCards}</div>
+<h2>${esc(g.gu)} 이용 안내</h2>
+${g.body.map(b => `<p>${esc(b)}</p>`).join('')}
+${(deepen[url] || []).map(x => `<p>${esc(x)}</p>`).join('')}
+<ul class="check-list"><li>정확한 도로명 주소·건물명·동 위치 확인</li><li>공동현관·방문차량 등록 방법</li><li>야간 이용 시 로비 운영 시간</li><li>이동 거리·이동료 기준</li></ul>
+<div class="callout">방문 가능 여부는 실제 위치·이동 거리·예약 시간대를 확인한 뒤 상담 시 최종 안내됩니다.</div>
+<h2>불법·선정적 서비스 불가 안내</h2>
+${ILLEGAL_NOTICE}
+${faqBlock(g.faq)}
+${relatedLinks('함께 보기', g.related.map(([l, u]) => [l, BASE + u]))}
 </div></article>`;
   writePage(url, layout({
     url, active: `${BASE}/incheon/`,
-    noindex: true, canonical: g.canonicalTo,
-    title: `${g.h1}｜${SITE.brand}`,
-    description: `${g.name} 생활권은 새 인천 행정체계 기준으로 안내됩니다.`,
+    title: `${g.title}｜${SITE.brand}`,
+    description: g.desc,
     breadcrumbs: crumbs({ name: '인천권', href: `${BASE}/incheon/` }, { name: g.name, href: url }),
-    body,
-  }), { noindex: true, canonical: g.canonicalTo });
+    body, faq: g.faq,
+  }));
 }
 
 /** life / siheung 세부 생활권 */
